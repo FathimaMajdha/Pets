@@ -26,7 +26,7 @@ const Login = () => {
         );
 
         if(!user && admin.username===values.username && admin.password === values.password){
-          navigate('/admin')
+         
         }else if (user) {
         localStorage.setItem("userId", user.id);
         localStorage.setItem("username", user.username);  

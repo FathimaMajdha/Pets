@@ -1,22 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AdminNav from "./AdminNav";
+import axios from "axios";
 import Dashboard from "./Dashboard";
 
-useEffect(() => {
-  axios
-    .get("http://localhost:3000/products")
-    .then((response) => {
-      const products = response.data[0]; 
-      const all = products.all || [];
-      setCart(all);
-    })
-    .catch((error) => {
-      console.error("Error fetching products:", error);
-    });
-}, []); 
-
-
 const Admin = () => {
+  const [user, setUser] = useState([]);
+  const[isOpen,setIsopen]=useState(false);
+
+
+  const toggleButton = () => {
+    
+    setIsOpen(!isOpen);
+  };
+
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/users")
+      .then((response) => {
+        const user = response.data;
+        setUser(user);
+      })
+      .catch((error) => {
+        console.error("Error fetching users details:", error);
+      });
+  }, []);
+
   return (
     <div>
       <AdminNav />
@@ -25,12 +34,29 @@ const Admin = () => {
         <h1 className="text-gray-800 text-2xl">Recent Login</h1>
         <hr />
         <table>
-          <div>
-            <th className="px-20">UserName</th>
-            <th className="px-20">Login Details</th>
-            <th className="px-20">Time</th>
-          </div>
-          <td></td>
+          <thead>
+          <tr>
+          <th >User Id</th>
+            <th className="px-40">UserName</th>
+            <th className="px-20"> User Email</th>
+            <th className="px-20">Password</th>
+          </tr>
+          </thead>
+          <tbody>
+         
+          {user.map((details) => (
+              <tr >
+                <td> {details.id}</td>
+                <td className="text-lg font-bold text-gray-600 mb-2 px-40">{details.username}</td>
+                <td className="text-gray-600 text-sm mb-2 px-40">{details.email}</td>
+                <td className="text-gray-600 text-sm mb-2 px-40">{details.password}</td>
+                <button onClick={toggleButton} type="button">Block</button>
+              </tr>
+          ))}
+          
+
+          </tbody>
+          
         </table>
       </div>
     </div>
