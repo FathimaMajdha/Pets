@@ -11,7 +11,7 @@ const Admin = () => {
     //   await axios.put(`http://localhost:3000/users/${userid}`, { isBlocked: !isBlocked });
 
       const New= user.map((user) => 
-        user.id === userid ? { ...user, isBlocked: isBlocked } : user
+        user.id === userid ? { ...user, isBlocked:!isBlocked } : user
       );
       
       setUser(New);
