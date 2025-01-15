@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
+    "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
+    "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
+    "reviews": 5,
+    "price": 59.99,
+    "quantity": 10
+  },
+  {
+    "id": 2,
+    "imageUrl": "https://example.com/product2.jpg",
+    "title": "SuperCat Cat Food Salmon",
+    "description": "High-quality salmon-based food for cats.",
+    "reviews": 4,
+    "price": 29.99,
+    "quantity": 8
+  },
+  {
+    "id": 3,
+    "imageUrl": "https://example.com/product3.jpg",
+    "title": "Birdie Delight Bird Food",
+    "description": "Perfect for keeping your bird happy and healthy.",
+    "reviews": 3,
+    "price": 19.99,
+    "quantity": 15
+  }
+]
