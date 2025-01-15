@@ -34,6 +34,7 @@ const Register = () => {
           ...values,
           cart: [],
           orders: [],
+          isBlocked:false,
         };
 
         const registerResponse = await axios.post("http://localhost:3000/users", newUser);

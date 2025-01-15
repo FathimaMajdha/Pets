@@ -6,6 +6,7 @@
       "email": "maji@gmail.com",
       "password": "123456",
       "phoneNumber": "8281304925",
+      "isBlocked": false,
       "cart": [
         {
           "id": 1,
@@ -170,6 +171,7 @@
       "email": "majdha@gmail.com",
       "password": "345678",
       "phoneNumber": "8281304926",
+      "isBlocked": false,
       "cart": [],
       "orders": []
     },
@@ -179,6 +181,7 @@
       "email": "admin1@gmail.com",
       "password": "123456",
       "phoneNumber": "8281304892",
+      "isBlocked": false,
       "cart": [],
       "orders": []
     },
@@ -188,6 +191,7 @@
       "email": "admin2@gmail.com",
       "password": "234512",
       "phoneNumber": "2345678901",
+      "isBlocked": false,
       "cart": [],
       "orders": []
     },
@@ -197,6 +201,7 @@
       "email": "admin3@gmail.com",
       "password": "234567",
       "phoneNumber": "2456789921",
+      "isBlocked": false,
       "cart": [],
       "orders": []
     },
@@ -206,17 +211,18 @@
       "email": "admin@gmail.com",
       "password": "123456",
       "phoneNumber": "8281304925",
+      "isBlocked": false,
       "cart": [],
       "orders": []
-    },
-    {
-      "id": "2a0c",
-      "username": "admin4",
-      "email": "admin4@gmail.com",
-      "password": "345678",
-      "phoneNumber": "3456789012",
+    },{
+      "id": "b7d8",
+      "username": "majdha",
+      "email": "maji@gmail.com",
+      "password": "234567",
+      "phoneNumber": "1234567890",
       "cart": [],
-      "orders": []
+      "orders": [],
+      "isBlocked": false
     }
   ],
   "products": [

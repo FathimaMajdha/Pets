@@ -1,48 +1,62 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios"; 
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  
   const validationSchema = Yup.object({
     username: Yup.string().required("Username is required"),
-    password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
+    email: Yup.string().email("Invalid email format").required("Email is required"),
+    password: Yup.string().required("Password is required")
   });
 
-  
-  const handleSubmit = async (values) => {
-    try {
-      const response = await axios.get("http://localhost:3000/users");
-      const users = response.data;
-  
-        const user = users.find(
-          (user) => user.username === values.username && user.password === values.password
+  const handleSubmit = (values) => {
+    axios
+      .get("http://localhost:3000/users")
+      .then((response) => {
+        console.log("Fetched users:", response.data); 
+
+        const admin = response.data.find(
+          (user) =>
+            values.email === user.email &&
+            values.password === user.password &&
+            user.username === "admin" &&
+            user.email === "admin@gmail.com" 
         );
 
-        if(!user && admin.username===values.username && admin.password === values.password){
-         
-        }else if (user) {
-        localStorage.setItem("userId", user.id);
-        localStorage.setItem("username", user.username);  
-        console.log("Login Successful:", values);
-        navigate("/admin"); 
+        if (admin) {
+          localStorage.setItem("userId", admin.id);
+          localStorage.setItem("username", admin.username);
+          console.log("Admin Login Successful:", values);
+          setUser(admin);
+          navigate("/admin"); 
+        } else {
+          
+          const userDetail = response.data.find(
+            (user) =>
+              values.email === user.email && values.password === user.password
+          );
 
-      } else {
-        alert("Invalid username or password!");
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      alert("Failed to fetch user data. Please try again later.");
-    }
+          if (userDetail) {
+            localStorage.setItem("userId", userDetail.id);
+            localStorage.setItem("username", userDetail.username);
+            console.log("Login Successful:", values);
+            setUser(userDetail);
+            navigate("/"); 
+            
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("Error fetching user data:", error);
+        alert("Failed to fetch user data. Please try again later.");
+      });
   };
- 
-  
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-800">
       <div className="main bg-white rounded-lg shadow-md p-10 w-96 text-center">
@@ -52,7 +66,7 @@ const Login = () => {
         <Formik
           initialValues={{
             username: "",
-            password: "",
+            email: ""
           }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
@@ -69,16 +83,14 @@ const Login = () => {
             />
             <ErrorMessage name="username" component="p" className="text-red-500 text-left" />
 
-            <label className="block mb-2 text-left text-gray-700 font-bold">
-              Password:
-            </label>
+            <label className="block mb-2 text-left text-gray-700 font-bold">Email:</label>
             <Field
-              type="password"
-              name="password"
-              className="block w-full mb-6 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-400"
-              placeholder="Enter your password"
+              name="email"
+              type="email"
+              className="block w-full mb-6 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-800"
+              placeholder="Enter your Email"
             />
-            <ErrorMessage name="password" component="p" className="text-red-500 text-left" />
+            <ErrorMessage name="email" component="p" className="text-red-500 text-left" />
 
             <button
               type="submit"
