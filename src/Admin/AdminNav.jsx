@@ -1,12 +1,9 @@
-import React, { useState, useContext } from "react";
 import { BsSearch } from "react-icons/bs";
-import { useNavigate, Link } from "react-router-dom";
 import { FaBell } from "react-icons/fa";
 import { MdOutlineAccountCircle} from 'react-icons/md'
 
 
 const AdminNav = () => {
-  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,11 +16,9 @@ const AdminNav = () => {
   
 
   return (
-    <div>
-      <div className="flex items-center ml-4 mt-10 sm:ml-8 lg:ml-12">
-        <Link to="/" className="text-gray-800 font-devonshire text-2xl sm:text-3xl md:text-4xl">
-          PetsFood
-        </Link>
+    <div className="ml-96">
+      <div className="flex items-center ml-40 mt-10 sm:ml-8 lg:ml-12">
+        
         <div className="relative ml-4 sm:ml-8 md:ml-60 flex-grow">
           <form onSubmit={handleSubmit}>
             <input

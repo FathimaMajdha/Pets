@@ -17,11 +17,18 @@ import Payment from './Order/Payment.jsx'
 import Order from './Order/Order.jsx';
 import Booking from './pages/Booking.jsx';
 import MyPets from './pages/MyPets.jsx';
-import Admin from './Admin/Admin.jsx'
+
+
+// admin
+import OverView from './Admin/OverView.jsx';
+import ProductDetails from './Admin/ProductDetails.jsx';
+import Users from './Admin/Users.jsx';
+import Ordered from './Admin/Ordered.jsx'
+import ViewDetails from './Admin/ViewDetails.jsx';
 
 const App = () => {
   const location = useLocation();
-  const hideHeaderFooterRoutes = ["/login", "/register","/userdetails","/payment","/admin"];
+  const hideHeaderFooterRoutes = ["/login", "/register","/userdetails","/payment","/admin","/dashboard","/users","/orders","/products","/viewdetails/:id"];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -45,7 +52,13 @@ const App = () => {
           <Route path="/support" element={<Support/>}/>
           <Route path="/booking" element={<Booking/>}/>
           <Route path="/mypets" element={<MyPets/>}/>
-          <Route path="/admin" element={<Admin/>}/>
+
+          {/* Admin section */}
+          <Route path="/dashboard" element={<OverView/>}/>
+          <Route path="/users" element={<Users/>}/>
+          <Route path="/orders" element={<Ordered/>}/> 
+          <Route path="/products" element={<ProductDetails/>}/> 
+          <Route path="/viewdetails/:id" element={<ViewDetails />} />
         </Routes>
       </div>
     </div>

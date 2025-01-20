@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { CartContext } from "../Features/ContextProvider";
 import { useNavigate } from "react-router-dom";
+
 const CartProduct = ({ selectedProduct }) => {
   const { cart, dispatch } = useContext(CartContext);
   

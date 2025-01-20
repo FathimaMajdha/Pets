@@ -20,7 +20,7 @@ const DogFood = () => {
       .get("http://localhost:3000/products")
       .then((response) => {
         const products = response.data[0]; 
-        const all = products.all || [];
+        const all = products.dogfoodall || [];
         setCart(all);
       })
       .catch((error) => {
@@ -105,7 +105,7 @@ const DogFood = () => {
       <div ref={sliderRef} className="overflow-y-auto scroll-smooth max-w-screen gap-[20px]" style={{ maxHeight: "500px" }}>
         <div className="max-w-7xl mx-auto py-8 px-4">
           {cart.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {cart.map((item) => (
                 <div key={item.id} className="flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
                   <div className="w-full">

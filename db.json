@@ -9,17 +9,8 @@
       "isBlocked": false,
       "cart": [
         {
-          "id": 1,
-          "imageUrl": "01.jpg",
-          "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
-          "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
-          "reviews": 5,
-          "price": 59.99,
-          "quantity": 1
-        },
-        {
           "id": 2,
-          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_P3343.jpg",
+          "imageUrl": "01.jpg",
           "title": "Royal Canin Veterinary Hypoallergenic Adult Dry Dog Food",
           "description": "High-quality  food for Dogs.",
           "reviews": 4,
@@ -29,15 +20,15 @@
       ],
       "orders": [
         {
-          "orderId": "2025-01-14T15:31:30.877Z",
+          "orderId": "14T15",
           "cartItems": [
             {
-              "id": 2,
-              "imageUrl": "02.jpg",
-              "title": "SuperCat Cat Food Salmon",
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7151114.jpg",
+              "title": "Blink! Fresh Dry Adult Cat Food Salmon 2kg",
               "description": "High-quality salmon-based food for cats.",
               "reviews": 4,
-              "price": 29.99,
+              "price": 24.99,
               "quantity": 1
             }
           ],
@@ -47,15 +38,16 @@
             "expirationDate": "08/45",
             "cvv": "100"
           },
-          "totalAmount": 29.99
+          "totalAmount": 29.99,
+          "status": "Pending"
         },
         {
-          "orderId": "2025-01-14T16:26:51.504Z",
+          "orderId": "14T16",
           "cartItems": [
             {
-              "id": 2,
-              "imageUrl": "02.jpg",
-              "title": "SuperCat Cat Food Salmon",
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7146357.jpg",
+              "title": "Seriously Good Dry Adult Cat Food Salmon & Chicken 2kg",
               "description": "High-quality salmon-based food for cats.",
               "reviews": 4,
               "price": 29.99,
@@ -68,14 +60,15 @@
             "expirationDate": "01/56",
             "cvv": "345"
           },
-          "totalAmount": 29.99
+          "totalAmount": 29.99,
+          "status": "Pending"
         },
         {
-          "orderId": "2025-01-14T16:30:37.899Z",
+          "orderId": "14T17",
           "cartItems": [
             {
               "id": 1,
-              "imageUrl": "01.jpg",
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
               "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
               "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
               "reviews": 5,
@@ -89,19 +82,20 @@
             "expirationDate": "09/23",
             "cvv": "544"
           },
-          "totalAmount": 59.99
+          "totalAmount": 59.99,
+          "status": "Pending"
         },
         {
-          "orderId": "2025-01-14T16:33:04.999Z",
+          "orderId": "14T18",
           "cartItems": [
             {
               "id": 1,
-              "imageUrl": "01.jpg",
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
               "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
               "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
               "reviews": 5,
               "price": 59.99,
-              "quantity": 1
+              "quantity": 2
             }
           ],
           "paymentInfo": {
@@ -110,14 +104,15 @@
             "expirationDate": "12/56",
             "cvv": "123"
           },
-          "totalAmount": 59.99
+          "totalAmount": 59.99,
+          "status": "Pending"
         },
         {
-          "orderId": "2025-01-14T16:34:02.466Z",
+          "orderId": "14T19",
           "cartItems": [
             {
               "id": 1,
-              "imageUrl": "01.jpg",
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
               "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
               "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
               "reviews": 5,
@@ -131,14 +126,15 @@
             "expirationDate": "01/23",
             "cvv": "123"
           },
-          "totalAmount": 59.99
+          "totalAmount": 59.99,
+          "status": "Pending"
         },
         {
-          "orderId": "2025-01-15T06:20:42.826Z",
+          "orderId": "14T20",
           "cartItems": [
             {
               "id": 1,
-              "imageUrl": "01.jpg",
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
               "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
               "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
               "reviews": 5,
@@ -161,7 +157,74 @@
             "expirationDate": "09/34",
             "cvv": "100"
           },
-          "totalAmount": 80.28
+          "totalAmount": 80.28,
+          "status": "Pending"
+        },
+        {
+          "orderId": "14T21",
+          "cartItems": [
+            {
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
+              "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
+              "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
+              "reviews": 5,
+              "price": 59.99,
+              "quantity": 1
+            }
+          ],
+          "paymentInfo": {
+            "cardholderName": "majdha",
+            "cardNumber": "1234567890123456",
+            "expirationDate": "01/23",
+            "cvv": "123"
+          },
+          "totalAmount": 59.99,
+          "status": "Pending"
+        },
+        {
+          "orderId": "14T22",
+          "cartItems": [
+            {
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
+              "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
+              "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
+              "reviews": 5,
+              "price": 59.99,
+              "quantity": 1
+            }
+          ],
+          "paymentInfo": {
+            "cardholderName": "majdha",
+            "cardNumber": "1234567890123456",
+            "expirationDate": "01/23",
+            "cvv": "123"
+          },
+          "totalAmount": 59.99,
+          "status": "Pending"
+        },
+        {
+          "orderId": "14T23",
+          "cartItems": [
+            {
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_P3343.jpg",
+              "title": "Royal Canin Veterinary Hypoallergenic Adult Dry Dog Food",
+              "description": "High-quality  food for Dogs.",
+              "reviews": 4,
+              "price": 20.29,
+              "quantity": 1
+            }
+          ],
+          "paymentInfo": {
+            "cardholderName": "majiiii",
+            "cardNumber": "1234567890123456",
+            "expirationDate": "01/43",
+            "cvv": "100"
+          },
+          "totalAmount": 20.29,
+          "status": "Pending"
         }
       ]
     },
@@ -176,36 +239,6 @@
       "orders": []
     },
     {
-      "id": "32ee",
-      "username": "admin1",
-      "email": "admin1@gmail.com",
-      "password": "123456",
-      "phoneNumber": "8281304892",
-      "isBlocked": false,
-      "cart": [],
-      "orders": []
-    },
-    {
-      "id": "18b5",
-      "username": "admin2",
-      "email": "admin2@gmail.com",
-      "password": "234512",
-      "phoneNumber": "2345678901",
-      "isBlocked": false,
-      "cart": [],
-      "orders": []
-    },
-    {
-      "id": "fe92",
-      "username": "admin3",
-      "email": "admin3@gmail.com",
-      "password": "234567",
-      "phoneNumber": "2456789921",
-      "isBlocked": false,
-      "cart": [],
-      "orders": []
-    },
-    {
       "id": "1ad1",
       "username": "admin",
       "email": "admin@gmail.com",
@@ -214,7 +247,8 @@
       "isBlocked": false,
       "cart": [],
       "orders": []
-    },{
+    },
+    {
       "id": "b7d8",
       "username": "majdha",
       "email": "maji@gmail.com",
@@ -222,15 +256,15 @@
       "phoneNumber": "1234567890",
       "cart": [],
       "orders": [],
-      "isBlocked": false
+      "isBlocked": true
     }
   ],
   "products": [
     {
-      "all": [
+      "dogfoodall": [
         {
           "id": 1,
-          "imageUrl": "01.jpg",
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
           "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
           "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
           "reviews": 5,
@@ -275,6 +309,42 @@
         },
         {
           "id": 6,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7136406.jpg",
+          "title": "Royal Canin Veterinary Hypoallergenic Adult Wet Dog Food 12x400g",
+          "description": "Perfect for keeping your Dog happy and healthy.",
+          "reviews": 3,
+          "price": 19.99,
+          "quantity": 1
+        },
+        {
+          "id": 7,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7120085.jpg",
+          "title": "AVA Optimum Health Sensitive Skin & Stomach Dry Dog Food 15kg",
+          "description": "Perfect for keeping your dog healthy.",
+          "reviews": 3,
+          "price": 59.99,
+          "quantity": 1
+        },
+        {
+          "id": 8,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_23560.jpg",
+          "title": "Pets Essentials Mixed Variety Adult Wet Dog Food 24x400g",
+          "description": "A nutritious and tasty food for dogs",
+          "reviews": 5,
+          "price": 13.59,
+          "quantity": 1
+        },
+        {
+          "id": 9,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7137811.jpg",
+          "title": "Lily's Kitchen Classic Dinners Adult Wet Dog Food 24x400g",
+          "description": "High-quality food for Dogs.",
+          "reviews": 4,
+          "price": 29.99,
+          "quantity": 1
+        },
+        {
+          "id": 10,
           "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7136406.jpg",
           "title": "Royal Canin Veterinary Hypoallergenic Adult Wet Dog Food 12x400g",
           "description": "Perfect for keeping your Dog happy and healthy.",
@@ -340,6 +410,186 @@
         }
       ],
       "wetdogfood": [
+        {
+          "id": 1,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_23560.jpg",
+          "title": "Pets Essentials Mixed Variety Adult Wet Dog Food 24x400g",
+          "description": "A nutritious and tasty food for dogs",
+          "reviews": 5,
+          "price": 13.59,
+          "quantity": 1
+        },
+        {
+          "id": 2,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7137811.jpg",
+          "title": "Lily's Kitchen Classic Dinners Adult Wet Dog Food 24x400g",
+          "description": "High-quality food for Dogs.",
+          "reviews": 4,
+          "price": 29.99,
+          "quantity": 1
+        },
+        {
+          "id": 3,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7136406.jpg",
+          "title": "Royal Canin Veterinary Hypoallergenic Adult Wet Dog Food 12x400g",
+          "description": "Perfect for keeping your Dog happy and healthy.",
+          "reviews": 3,
+          "price": 19.99,
+          "quantity": 1
+        }
+      ],
+      "id": "a43c"
+    },
+    {
+      "catfoodall": [
+        {
+          "id": 1,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_27145.jpg",
+          "title": "Royal Canin British Shorthair Adult Dry Cat Food 10kg",
+          "description": "A nutritious and tasty dry food for cats",
+          "reviews": 5,
+          "price": 66.72,
+          "quantity": 1
+        },
+        {
+          "id": 2,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7128247.jpg",
+          "title": "Felix Doubly Delicious Wet Cat Food Mixed 88x100g",
+          "description": "High-quality  food for Cats.",
+          "reviews": 4,
+          "price": 30.49,
+          "quantity": 1
+        },
+        {
+          "id": 3,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7142129.jpg",
+          "title": "Pets Essentials Adult Cat Wet Food Chunks in Jelly Variety 9.6kg",
+          "description": "Perfect for keeping your cat happy and healthy.",
+          "reviews": 4,
+          "price": 18.99,
+          "quantity": 1
+        },
+        {
+          "id": 4,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7147088.jpg",
+          "title": "Whiskas 1+ Adult Wet Cat Food Jelly Fish Favourites 80x85g",
+          "description": "Perfect for keeping your cat healthy.",
+          "reviews": 5,
+          "price": 23.99,
+          "quantity": 1
+        },
+        {
+          "id": 5,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_P71040.jpg",
+          "title": "Pro Plan Vet Diet HA Hypoallergenic Dry Cat Food",
+          "description": "Perfect for keeping your cat healthy.",
+          "reviews": 5,
+          "price": 39.89,
+          "quantity": 1
+        },
+        {
+          "id": 6,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7114541.jpg",
+          "title": "Royal Canin Vet Nutrition Renal Adult Wet Cat Food Chicken 48x85g",
+          "description": "Perfect for keeping your cat happy and healthy.",
+          "reviews": 3,
+          "price": 59.89,
+          "quantity": 1
+        },
+        {
+          "id": 7,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_27185.jpg",
+          "title": "Royal Canin Feline Digestive Dry Adult Cat Food 10kg",
+          "description": "Perfect for keeping your cat healthy.",
+          "reviews": 3,
+          "price": 53.99,
+          "quantity": 1
+        },
+        {
+          "id": 8,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7136916.jpg",
+          "title": "Sheba Fine Flakes Adult Wet Cat Food Poultry In Jelly Giant 80x85g",
+          "description": "A nutritious and tasty food for cats",
+          "reviews": 5,
+          "price": 30.99,
+          "quantity": 1
+        },
+        {
+          "id": 9,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7144736.jpg",
+          "title": "Lily's Kitchen Adult Cat Wet Food Shredded Fillets 16x70g",
+          "description": "High-quality food for cats.",
+          "reviews": 4,
+          "price": 15.74,
+          "quantity": 1
+        },
+        {
+          "id": 10,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7144734.jpg",
+          "title": "Lily's Kitchen Adult Cat Wet Food Smooth Pate Selection 16x85g",
+          "description": "Perfect for keeping your Dog happy and healthy.",
+          "reviews": 3,
+          "price": 19.99,
+          "quantity": 1
+        }
+      ],
+      "drycatfood": [
+        {
+          "id": 1,
+          "imageUrl": "01.jpg",
+          "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
+          "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
+          "reviews": 5,
+          "price": 59.99,
+          "quantity": 1
+        },
+        {
+          "id": 2,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_P3343.jpg",
+          "title": "Royal Canin Veterinary Hypoallergenic Adult Dry Dog Food",
+          "description": "High-quality  food for Dogs.",
+          "reviews": 4,
+          "price": 20.29,
+          "quantity": 1
+        },
+        {
+          "id": 3,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7118367.jpg",
+          "title": "Pro Plan Vet Diet Hypoallergenic Dry Dog Food 11kg",
+          "description": "Perfect for keeping your dog happy and healthy.",
+          "reviews": 4,
+          "price": 19.99,
+          "quantity": 1
+        },
+        {
+          "id": 4,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7120085.jpg",
+          "title": "AVA Optimum Health Sensitive Skin & Stomach Dry Dog Food 15kg",
+          "description": "Perfect for keeping your dog healthy.",
+          "reviews": 3,
+          "price": 59.99,
+          "quantity": 1
+        },
+        {
+          "id": 5,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_19123.jpg",
+          "title": "Royal Canin Medium Dry Adult Dog Food 15kg",
+          "description": "Perfect for keeping your dog healthy.",
+          "reviews": 5,
+          "price": 55.89,
+          "quantity": 1
+        },
+        {
+          "id": 6,
+          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_P3345.jpg",
+          "title": "Royal Canin Veterinary Satiety Adult Dry Dog Food",
+          "description": "Perfect for keeping your dog healthy.",
+          "reviews": 5,
+          "price": 14.89,
+          "quantity": 1
+        }
+      ],
+      "wetcatfood": [
         {
           "id": 1,
           "imageUrl": "https://cdn.petsathome.com/public/images/products/900_23560.jpg",

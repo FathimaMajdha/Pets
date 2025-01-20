@@ -78,6 +78,7 @@ const Navbar = () => {
     navigate("/");
   };
 
+  
   const username = localStorage.getItem("username");
 
   return (

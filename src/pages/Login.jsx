@@ -9,40 +9,40 @@ const Login = () => {
   const navigate = useNavigate();
 
   const validationSchema = Yup.object({
-    username: Yup.string().required("Username is required"),
     email: Yup.string().email("Invalid email format").required("Email is required"),
     password: Yup.string().required("Password is required")
   });
 
   const handleSubmit = (values) => {
+    console.log(values)
     axios
       .get("http://localhost:3000/users")
       .then((response) => {
-        console.log("Fetched users:", response.data); 
-
+        
         const admin = response.data.find(
           (user) =>
             values.email === user.email &&
             values.password === user.password &&
-            user.username === "admin" &&
-            user.email === "admin@gmail.com" 
+            values.password === "123456" &&
+            values.email === "admin@gmail.com" 
         );
-
+        
         if (admin) {
-          localStorage.setItem("userId", admin.id);
-          localStorage.setItem("username", admin.username);
+          localStorage.setItem("userid", admin.id);
+          localStorage.setItem("email", admin.username);
           console.log("Admin Login Successful:", values);
           setUser(admin);
-          navigate("/admin"); 
+          navigate("/dashboard"); 
         } else {
           
           const userDetail = response.data.find(
             (user) =>
               values.email === user.email && values.password === user.password
-          );
-
-          if (userDetail) {
-            localStorage.setItem("userId", userDetail.id);
+            );
+            if(userDetail.isBlocked){
+              alert("this user can't login")
+            }else if (!userDetail.isBlocked) {
+            localStorage.setItem("userid", userDetail.id);
             localStorage.setItem("username", userDetail.username);
             console.log("Login Successful:", values);
             setUser(userDetail);
@@ -65,32 +65,36 @@ const Login = () => {
 
         <Formik
           initialValues={{
-            username: "",
-            email: ""
+            email: "",
+            password:""
           }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
           <Form>
             <label className="block mt-4 mb-2 text-left text-gray-700 font-bold">
-              Username:
+              Email:
             </label>
             <Field
-              type="text"
-              name="username"
-              className="block w-full mb-6 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-800"
-              placeholder="Enter your username"
-            />
-            <ErrorMessage name="username" component="p" className="text-red-500 text-left" />
-
-            <label className="block mb-2 text-left text-gray-700 font-bold">Email:</label>
-            <Field
-              name="email"
               type="email"
+              name="email"
               className="block w-full mb-6 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-800"
-              placeholder="Enter your Email"
+              placeholder="Enter your email"
+              autoComplete="current-email"
+              
             />
             <ErrorMessage name="email" component="p" className="text-red-500 text-left" />
+
+            <label className="block mb-2 text-left text-gray-700 font-bold">password:</label>
+            <Field
+              name="password"
+              type="password"
+              className="block w-full mb-6 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-800"
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              
+            />
+            <ErrorMessage name="password" component="p" className="text-red-500 text-left" />
 
             <button
               type="submit"

@@ -100,6 +100,7 @@ const Register = () => {
                     <Field
                       name="username"
                       type="text"
+                      autoComplete="current-username"
                       className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md outline-blue-500 ${
                         errors.username && touched.username ? "border-red-500" : "border-gray-300"
                       }`}
@@ -114,6 +115,7 @@ const Register = () => {
                     <Field
                       name="email"
                       type="email"
+                      autoComplete="current-email"
                       className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md outline-blue-500 ${
                         errors.email && touched.email ? "border-red-500" : "border-gray-300"
                       }`}
@@ -128,6 +130,7 @@ const Register = () => {
                     <Field
                       name="password"
                       type="password"
+                      autoComplete="current-password"
                       className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md outline-blue-500 ${
                         errors.password && touched.password ? "border-red-500" : "border-gray-300"
                       }`}
@@ -142,6 +145,7 @@ const Register = () => {
                     <Field
                       name="phoneNumber"
                       type="text"
+                      autoComplete="current-phoneNumber"
                       className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md outline-blue-500 ${
                         errors.phoneNumber && touched.phoneNumber ? "border-red-500" : "border-gray-300"
                       }`}
