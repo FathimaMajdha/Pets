@@ -8,6 +8,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Sidebar from "../Components/Sidebar";
 import { CartContext } from "../Features/ContextProvider";
 
+
 const Navbar = () => {
   const { cart = [] } = useContext(CartContext);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -15,7 +16,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const items = ["Dog Food", "Cat Food", "Offers"];
-  
+
   const icons = [
     <LuTextSearch />,
     <FaPaw />,
@@ -60,16 +61,20 @@ const Navbar = () => {
     } else if (item === "Offers") {
       navigate("/offers");
     }
-    setFilteredItems([]); 
+    setFilteredItems([]);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const input = e.target.search.value.trim();
     if (input) {
-      handleItemClick(input);
+      if (!items.some(item => item.toLowerCase() === input.toLowerCase())) {
+        navigate("/result-not-found");
+      } else {
+        handleItemClick(input);
+      }
     }
-    e.target.reset(); 
+    e.target.reset();
   };
 
   const handleLogout = () => {
@@ -78,7 +83,6 @@ const Navbar = () => {
     navigate("/");
   };
 
-  
   const username = localStorage.getItem("username");
 
   return (

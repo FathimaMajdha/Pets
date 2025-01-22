@@ -1,16 +1,13 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { CartContext } from "../Features/ContextProvider";
 
 const Payment = () => {
   const navigate = useNavigate();
-  const { cart } = useContext(CartContext); 
-
-  
+  const location = useLocation();
+  const { orderDetails } = location.state || {}; 
   const validationSchema = Yup.object().shape({
     cardholderName: Yup.string().required("Cardholder name is required"),
     cardNumber: Yup.string()
@@ -24,35 +21,28 @@ const Payment = () => {
       .required("CVV is required"),
   });
 
-  
   const handleSubmit = (values) => {
     console.log("Payment Details:", values);
     alert("Payment details submitted successfully!");
 
-   
     const userId = "9dbf";  
-    const orderDetails = {
-      orderId: new Date().toISOString(),
-      cartItems: cart,
+    const orderDetailsWithPayment = {
+      ...orderDetails,
       paymentInfo: values,
-      totalAmount: cart.reduce((total, item) => total + item.price * item.quantity, 0),
     };
 
-    
+   
     axios
       .get("http://localhost:3000/users")
       .then((response) => {
         const user = response.data.find((user) => user.id === userId);
         if (user) {
-          user.orders.push(orderDetails);
-
-        
+          user.orders.push(orderDetailsWithPayment);
           axios
             .put(`http://localhost:3000/users/${userId}`, user)
             .then(() => {
               console.log("Order saved successfully!");
-              
-              navigate("/order", { state: { orderDetails } });
+              navigate("/order", { state: { orderDetails: orderDetailsWithPayment } });
             })
             .catch((error) => {
               console.error("Error saving the order:", error);
@@ -97,7 +87,6 @@ const Payment = () => {
                 <ErrorMessage name="cardholderName" component="div" className="text-red-500 text-sm" />
               </div>
 
-              
               <div>
                 <label htmlFor="cardNumber" className="block font-medium text-gray-700">
                   Card Number
@@ -111,7 +100,6 @@ const Payment = () => {
                 <ErrorMessage name="cardNumber" component="div" className="text-red-500 text-sm" />
               </div>
 
-             
               <div>
                 <label htmlFor="expirationDate" className="block font-medium text-gray-700">
                   Expiration Date (MM/YY)
@@ -125,7 +113,6 @@ const Payment = () => {
                 <ErrorMessage name="expirationDate" component="div" className="text-red-500 text-sm" />
               </div>
 
-             
               <div>
                 <label htmlFor="cvv" className="block font-medium text-gray-700">
                   CVV
@@ -139,7 +126,6 @@ const Payment = () => {
                 <ErrorMessage name="cvv" component="div" className="text-red-500 text-sm" />
               </div>
 
-             
               <div>
                 <button
                   type="submit"
@@ -157,3 +143,4 @@ const Payment = () => {
 };
 
 export default Payment;
+

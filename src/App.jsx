@@ -12,12 +12,12 @@ import Offers from './pages/Offers.jsx';
 import DryDogfood from './pages/DryDogfood.jsx';
 import WetDogfood from './pages/Wetdogfood.jsx';
 import Cart from './pages/Cart.jsx';
-import UserDetails from './Order/UserDetails.jsx';
+
 import Payment from './Order/Payment.jsx'
 import Order from './Order/Order.jsx';
 import Booking from './pages/Booking.jsx';
 import MyPets from './pages/MyPets.jsx';
-
+import ResultNotFound from './pages/ResultNotFound.jsx';
 
 // admin
 import OverView from './Admin/OverView.jsx';
@@ -28,7 +28,7 @@ import ViewDetails from './Admin/ViewDetails.jsx';
 
 const App = () => {
   const location = useLocation();
-  const hideHeaderFooterRoutes = ["/login", "/register","/userdetails","/payment","/admin","/dashboard","/users","/orders","/products","/viewdetails/:id"];
+  const hideHeaderFooterRoutes = ["/login", "/register","/payment","/admin","/dashboard","/users","/orders","/products","/viewdetails/:id"];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -46,12 +46,13 @@ const App = () => {
           <Route path="/offers" element={<Offers />} />
           <Route path="/sidebar" element={<Sidebar />} />
           <Route path="/cart" element={<Cart/>}/>
-          <Route path="/userdetails" element={<UserDetails/>}/>
+          
           <Route path="/payment" element={<Payment/>}/>
           <Route path="/order" element={<Order/>}/>
           <Route path="/support" element={<Support/>}/>
           <Route path="/booking" element={<Booking/>}/>
           <Route path="/mypets" element={<MyPets/>}/>
+          <Route path="/result-not-found" element={<ResultNotFound />} />
 
           {/* Admin section */}
           <Route path="/dashboard" element={<OverView/>}/>
@@ -59,6 +60,7 @@ const App = () => {
           <Route path="/orders" element={<Ordered/>}/> 
           <Route path="/products" element={<ProductDetails/>}/> 
           <Route path="/viewdetails/:id" element={<ViewDetails />} />
+           
         </Routes>
       </div>
     </div>

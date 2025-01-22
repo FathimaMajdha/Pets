@@ -1,12 +1,8 @@
 import React, { useContext } from "react";
 import { CartContext } from "../Features/ContextProvider";
-import { useNavigate } from "react-router-dom";
 
 const CartProduct = ({ selectedProduct }) => {
   const { cart, dispatch } = useContext(CartContext);
-  
-  const navigate=useNavigate();
-
   
   const Increase = (id) => {
     const Index = cart.findIndex((p) => p.id === id);
@@ -27,7 +23,7 @@ const CartProduct = ({ selectedProduct }) => {
 
   return (
     <div className="flex w-full px-16 py-4 border border-black/25 ml-20 mt-4">
-      {/* Left Section: Product Details */}
+     
       <div className="flex items-center space-x-6 w-3/4">
         <img
           src={selectedProduct.imageUrl}
@@ -63,7 +59,7 @@ const CartProduct = ({ selectedProduct }) => {
         </div>
       </div>
 
-      {/* Right Section: Price Details */}
+     
       <div className="flex flex-col justify-center items-center w-1/4 border-l pl-8">
         <h4 className="mr-24 text-lg font-semibold">Price Details</h4>
         <h4 className="  text-gray-800">Total Product Price: 
@@ -71,9 +67,7 @@ const CartProduct = ({ selectedProduct }) => {
         </h4>
         <br/>
         <p className="text-sm">Clicking on 'Continue' will not deduct any money</p>
-       <button onClick={()=>navigate('/userdetails')} className="bg-green-500 px-6 py-1 rounded text-white mt-10">
-        Continue
-       </button>
+       
       </div>
     </div>
   );

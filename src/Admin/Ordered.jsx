@@ -17,56 +17,6 @@ const Ordered = () => {
       });
   }, []);
 
-  const handleRemove = (productId, userId) => {
-    const updatedUsers = users.map((user) =>
-      user.id === userId
-        ? {
-            ...user,
-            orders: user.orders.filter((order) => order.id !== productId),
-          }
-        : user
-    );
-
-    const updatedUser = updatedUsers.find((user) => user.id === userId);
-
-    axios
-      .patch(`http://localhost:3000/users/${userId}`, {
-        orders: updatedUser.orders,
-      })
-      .then(() => {
-        setUsers(updatedUsers);
-      })
-      .catch((error) => {
-        console.error("Error updating the orders:", error);
-      });
-  };
-
-  const handleStatus = (productId, userId, newStatus) => {
-    const updatedUsers = users.map((user) =>
-      user.id === userId
-        ? {
-            ...user,
-            orders: user.orders.map((order) =>
-              order.id === productId ? { ...order, status: newStatus } : order
-            ),
-          }
-        : user
-    );
-
-    const updatedUser = updatedUsers.find((user) => user.id === userId);
-
-    axios
-      .patch(`http://localhost:3000/users/${userId}`, {
-        orders: updatedUser.orders,
-      })
-      .then(() => {
-        setUsers(updatedUsers);
-      })
-      .catch((error) => {
-        console.error("Error updating the status:", error);
-      });
-  };
-
   return (
     <div className="ml-96 px-20">
       <Sidebar2 />
@@ -92,58 +42,46 @@ const Ordered = () => {
                             <th className="border border-gray-400 px-2 py-1">Items</th>
                             <th className="border border-gray-400 px-2 py-1">Price</th>
                             <th className="border border-gray-400 px-2 py-1">Total Amount</th>
-                            <th className="border border-gray-400 px-2 py-1">Status</th>
-                            <th className="border border-gray-400 px-2 py-1">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {user.orders.map((order) => {
-                            const totalAmount = order.cartItems.reduce(
-                              (sum, item) => sum + item.price * item.quantity,
-                              0
-                            );
+                          {user.orders.map((order, orderIndex) => {
+                            // Check if cartItems exist before proceeding
+                            const totalAmount = order.cartItems
+                              ? order.cartItems.reduce(
+                                  (sum, item) => sum + item.price * item.quantity,
+                                  0
+                                )
+                              : 0;
+
                             return (
-                              <tr key={order.id}>
+                              <tr key={orderIndex}>
                                 <td className="border border-gray-400 px-2 py-1">
                                   <ul>
-                                    {order.cartItems.map((item) => (
-                                      <li key={item.id}>
-                                        {item.title} (x{item.quantity})
-                                      </li>
-                                    ))}
+                                    {order.cartItems ? (
+                                      order.cartItems.map((item) => (
+                                        <li key={item.id}>
+                                          {item.title} (x{item.quantity})
+                                        </li>
+                                      ))
+                                    ) : (
+                                      <li>No items in this order</li>
+                                    )}
                                   </ul>
                                 </td>
                                 <td className="border border-gray-400 px-2 py-1">
                                   <ul>
-                                    {order.cartItems.map((item) => (
-                                      <li key={item.id}>£{item.price.toFixed(2)}</li>
-                                    ))}
+                                    {order.cartItems ? (
+                                      order.cartItems.map((item) => (
+                                        <li key={item.id}>£{item.price.toFixed(2)}</li>
+                                      ))
+                                    ) : (
+                                      <li>-</li>
+                                    )}
                                   </ul>
                                 </td>
                                 <td className="border border-gray-400 px-2 py-1">
                                   £{totalAmount.toFixed(2)}
-                                </td>
-                                <td className="border border-gray-400 px-2 py-1">
-                                  <span className="font-bold">{order.status || "Pending"}</span>
-                                </td>
-                                <td className="border border-gray-400 px-2 py-1">
-                                  <select
-                                    className="bg-white border border-gray-400 px-2 py-1"
-                                    value={order.status || "Pending"}
-                                    onChange={(e) =>
-                                      handleStatus(order.id, user.id, e.target.value)
-                                    }
-                                  >
-                                    <option value="Pending">Pending</option>
-                                    <option value="Order Confirmed">Order Confirmed</option>
-                                    <option value="Delivered">Delivered</option>
-                                  </select>
-                                  <button
-                                    onClick={() => handleRemove(order.id, user.id)}
-                                    className="text-red-500 text-sm hover:underline ml-2"
-                                  >
-                                    Cancel
-                                  </button>
                                 </td>
                               </tr>
                             );
@@ -167,3 +105,4 @@ const Ordered = () => {
 };
 
 export default Ordered;
+
