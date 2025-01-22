@@ -124,11 +124,11 @@ const Navbar = () => {
           )}
         </div>
 
-        <div style={{ marginRight: "100px" }}>
+        <div style={{ marginRight: "50px" }}>
           {username ? (
             <div>
               <span className="mr-4">{`Hello, ${username}`}</span>
-              <button onClick={handleLogout} className="text-red-500">Logout</button>
+              <button onClick={handleLogout} className="text-red-500 ">Logout</button>
             </div>
           ) : (
             <button onClick={handleSignIn}>
@@ -137,10 +137,10 @@ const Navbar = () => {
           )}
         </div>
 
-        <div>
-          <Link to="/cart" className="ml-6">
+        <div >
+          <Link to="/cart" className="ml-9  ">
             {cart.length}
-            <BsCart4 className="text-4xl mr-44" />
+            <BsCart4 className="text-4xl mr-44 " />
           </Link>
         </div>
       </div>

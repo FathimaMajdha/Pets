@@ -16,20 +16,118 @@
           "reviews": 5,
           "price": 59.99,
           "quantity": 1
-        },
-        {
-          "id": 2,
-          "imageUrl": "https://cdn.petsathome.com/public/images/products/900_P3343.jpg",
-          "title": "Royal Canin Veterinary Hypoallergenic Adult Dry Dog Food",
-          "description": "High-quality  food for Dogs.",
-          "reviews": 4,
-          "price": 20.29,
-          "quantity": 1
         }
       ],
       "orders": [
         {
           "orderId": "2025-01-22T07:13:29.012Z",
+          "cartItems": [
+            {
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
+              "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
+              "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
+              "reviews": 5,
+              "price": 59.99,
+              "quantity": 1
+            },
+            {
+              "id": 2,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_P3343.jpg",
+              "title": "Royal Canin Veterinary Hypoallergenic Adult Dry Dog Food",
+              "description": "High-quality food for Dogs.",
+              "reviews": 4,
+              "price": 20.29,
+              "quantity": 1
+            }
+          ],
+          "paymentInfo": {
+            "cardholderName": "majdha",
+            "cardNumber": "1234567890123456",
+            "expirationDate": "01/23",
+            "cvv": "100"
+          },
+          "totalAmount": 80.28
+        },
+        {
+          "cartItems": [
+            {
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
+              "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
+              "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
+              "reviews": 5,
+              "price": 59.99,
+              "quantity": 1
+            },
+            {
+              "id": 2,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_P3343.jpg",
+              "title": "Royal Canin Veterinary Hypoallergenic Adult Dry Dog Food",
+              "description": "High-quality food for Dogs.",
+              "reviews": 4,
+              "price": 20.29,
+              "quantity": 1
+            },
+            {
+              "id": 3,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7118367.jpg",
+              "title": "Pro Plan Vet Diet Hypoallergenic Dry Dog Food 11kg",
+              "description": "Perfect for keeping your dog happy and healthy.",
+              "reviews": 4,
+              "price": 19.99,
+              "quantity": 1
+            }
+          ],
+          "totalAmount": 100.27,
+          "paymentInfo": {
+            "cardholderName": "majdha",
+            "cardNumber": "1234567890123456",
+            "expirationDate": "09/45",
+            "cvv": "234"
+          }
+        },
+        {
+          "cartItems": [
+            {
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
+              "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
+              "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
+              "reviews": 5,
+              "price": 59.99,
+              "quantity": 1
+            }
+          ],
+          "totalAmount": 59.99,
+          "paymentInfo": {
+            "cardholderName": "fasna",
+            "cardNumber": "2345678901123456",
+            "expirationDate": "09/45",
+            "cvv": "234"
+          }
+        },
+        {
+          "cartItems": [
+            {
+              "id": 1,
+              "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
+              "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
+              "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
+              "reviews": 5,
+              "price": 59.99,
+              "quantity": 1
+            }
+          ],
+          "totalAmount": 59.99,
+          "paymentInfo": {
+            "cardholderName": "fasna",
+            "cardNumber": "1234567890345671",
+            "expirationDate": "09/26",
+            "cvv": "100"
+          }
+        },
+        {
           "cartItems": [
             {
               "id": 1,
@@ -50,13 +148,13 @@
               "quantity": 1
             }
           ],
+          "totalAmount": 80.28,
           "paymentInfo": {
-            "cardholderName": "majdha",
-            "cardNumber": "1234567890123456",
-            "expirationDate": "01/23",
+            "cardholderName": "fasna",
+            "cardNumber": "0987654321112345",
+            "expirationDate": "08/21",
             "cvv": "100"
-          },
-          "totalAmount": 80.28
+          }
         }
       ]
     },
@@ -86,9 +184,19 @@
       "email": "maji@gmail.com",
       "password": "234567",
       "phoneNumber": "1234567890",
+      "isBlocked": true,
+      "cart": [],
+      "orders": []
+    },
+    {
+      "id": "f1a2",
+      "username": "Fasna",
+      "email": "fasna@gmail.com",
+      "password": "098765",
+      "phoneNumber": "2345678901",
       "cart": [],
       "orders": [],
-      "isBlocked": true
+      "isBlocked": false
     }
   ],
   "products": [
@@ -270,7 +378,11 @@
           "quantity": 1
         }
       ],
-      "id": "abda"
+      "id": "abda",
+      "title": "title",
+      "imageUrl": "dfghjkl",
+      "description": "dfghj",
+      "price": "34"
     },
     {
       "catfoodall": [
@@ -462,15 +574,6 @@
       "quantity": 1
     },
     {
-      "id": "1",
-      "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
-      "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
-      "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
-      "reviews": 5,
-      "price": 59.99,
-      "quantity": 1
-    },
-    {
       "id": "11",
       "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7136495.jpg",
       "title": "dfghjk",
@@ -511,15 +614,6 @@
       "category": ""
     },
     {
-      "id": "1",
-      "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7116142P.jpg",
-      "title": "Pooch & Mutt Slim & Slender Dry Dog Food Chicken",
-      "description": "A nutritious and tasty dry food for dogs, rich in chicken and ideal for weight management.",
-      "reviews": 5,
-      "price": 59.99,
-      "quantity": 1
-    },
-    {
       "id": "",
       "imageUrl": "",
       "title": "",
@@ -617,14 +711,6 @@
     },
     {
       "id": "",
-      "imageUrl": "",
-      "title": "",
-      "description": "",
-      "price": "",
-      "category": ""
-    },
-    {
-      "id": "1234",
       "imageUrl": "",
       "title": "",
       "description": "",
@@ -633,6 +719,62 @@
     },
     {
       "id": "123",
+      "imageUrl": "",
+      "title": "",
+      "description": "",
+      "price": "",
+      "category": "dogfoodall"
+    },
+    {
+      "id": "1234",
+      "imageUrl": "http://ertyu ",
+      "title": "product",
+      "description": "good quality product",
+      "price": "56",
+      "category": "dogfoodall"
+    },
+    {
+      "id": "2",
+      "imageUrl": "asc",
+      "title": "dsx",
+      "description": "sd c",
+      "price": "98",
+      "category": "dogfoodall"
+    },
+    {
+      "id": "12334",
+      "imageUrl": "v sfer",
+      "title": "scves",
+      "description": "scer",
+      "price": "345",
+      "category": "dogfoodall"
+    },
+    {
+      "id": "1234",
+      "imageUrl": "asdfghj",
+      "title": "product",
+      "description": "wertyhj",
+      "price": "29",
+      "category": "catfoodall"
+    },
+    {
+      "id": "",
+      "imageUrl": "",
+      "title": "",
+      "description": "",
+      "price": "",
+      "category": ""
+    },
+    {
+      "id": "",
+      "imageUrl": "",
+      "title": "",
+      "description": "",
+      "price": "",
+      "category": "dogfoodall"
+    },
+    {
+      "id": "",
       "imageUrl": "",
       "title": "",
       "description": "",

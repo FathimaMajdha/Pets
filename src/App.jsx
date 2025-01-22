@@ -12,7 +12,6 @@ import Offers from './pages/Offers.jsx';
 import DryDogfood from './pages/DryDogfood.jsx';
 import WetDogfood from './pages/Wetdogfood.jsx';
 import Cart from './pages/Cart.jsx';
-
 import Payment from './Order/Payment.jsx'
 import Order from './Order/Order.jsx';
 import Booking from './pages/Booking.jsx';

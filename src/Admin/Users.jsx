@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar2 from "./Sidebar2";
 import { useNavigate } from "react-router-dom";
+import { BsSearch } from "react-icons/bs";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);  
   const [loading, setLoading] = useState(true);
+  const [searchVal, setSearchVal] = useState("");  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,6 +17,7 @@ const Users = () => {
       .get("http://localhost:3000/users")
       .then((response) => {
         setUsers(response.data);
+        setFilteredUsers(response.data); 
         setLoading(false);
       })
       .catch((error) => {
@@ -21,12 +26,29 @@ const Users = () => {
       });
   }, []);
 
+  
+  const handleSearchClick = () => {
+    if (searchVal === "") {
+      setFilteredUsers(users);  
+    } else {
+      const filtered = users.filter((user) =>
+        user.username.toLowerCase().includes(searchVal.toLowerCase())
+      );
+      setFilteredUsers(filtered);  
+    }
+  };
+
   const toggleButton = (userId, currentStatus) => {
     axios
       .patch(`http://localhost:3000/users/${userId}`, { isBlocked: !currentStatus })
       .then(() => {
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
+            user.id === userId ? { ...user, isBlocked: !currentStatus } : user
+          )
+        );
+        setFilteredUsers((prevFilteredUsers) =>
+          prevFilteredUsers.map((user) =>
             user.id === userId ? { ...user, isBlocked: !currentStatus } : user
           )
         );
@@ -42,6 +64,9 @@ const Users = () => {
       .delete(`http://localhost:3000/users/${userId}`)
       .then(() => {
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+        setFilteredUsers((prevFilteredUsers) =>
+          prevFilteredUsers.filter((user) => user.id !== userId)
+        );
       })
       .catch((error) => {
         console.error("Error deleting user:", error);
@@ -53,7 +78,28 @@ const Users = () => {
     <div className="bg-red-100 h-screen">
       <Sidebar2 />
       <div className="p-10 ml-96">
-        <h1 className="text-gray-800 text-2xl ml-96 font-bold">Users List</h1>
+        <h1 className="text-gray-800 text-2xl font-bold">Users List</h1>
+
+        <div className="relative ml-4 sm:ml-8 md:ml-60 flex-grow">
+          <input
+            type="text"
+            name="search"
+            id="search"
+            placeholder="Search"
+            value={searchVal}  
+            onChange={(e) => setSearchVal(e.target.value)}  
+            onKeyUp={handleSearchClick}  
+            className="bg-white w-full sm:w-[400px] md:w-[500px] lg:w-[600px] px-4 py-3 text-black border border-gray-300 rounded-lg pl-10 -mt-24"
+          />
+          <button
+            type="button"
+            className="absolute left-5 top-3 transform -translate-y-1/2 text-gray-500"
+            aria-label="Search"
+            onClick={handleSearchClick}  
+          >
+            <BsSearch className="handle" />
+          </button>
+        </div>
 
         {loading ? (
           <p className="text-center text-gray-600">Loading users...</p>
@@ -72,13 +118,13 @@ const Users = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                   <tr key={user.id} className="bg-white border border-black/10">
                     <td className="px-12 py-4">{user.username}</td>
                     <td className="px-12 py-4">{user.orders.length}</td>
                     <td className="px-12 py-4">{user.email}</td>
                     <td className="px-12 py-4">{user.password}</td>
-                    <div className="col-span-2">
+                    <div>
                     <td className="px-2 py-4">
                       <button
                         onClick={() => toggleButton(user.id, user.isBlocked)}
@@ -131,3 +177,4 @@ const Users = () => {
 };
 
 export default Users;
+

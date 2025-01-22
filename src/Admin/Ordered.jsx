@@ -46,7 +46,7 @@ const Ordered = () => {
                         </thead>
                         <tbody>
                           {user.orders.map((order, orderIndex) => {
-                            // Check if cartItems exist before proceeding
+                           
                             const totalAmount = order.cartItems
                               ? order.cartItems.reduce(
                                   (sum, item) => sum + item.price * item.quantity,
