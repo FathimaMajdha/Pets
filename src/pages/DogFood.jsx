@@ -19,14 +19,16 @@ const DogFood = () => {
     axios
       .get("http://localhost:3000/products")
       .then((response) => {
-        const products = response.data[0]; 
-        const all = products.dogfoodall || [];
-        setCart(all);
+        // Filter products for category `dogfoodall`
+        const dogFoodProducts = response.data.filter(
+          (product) => product.category === "dogfoodall"
+        );
+        setCart(dogFoodProducts);
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
       });
-  }, []); 
+  }, []);
 
   
   const sortProducts = () => {

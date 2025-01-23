@@ -13,52 +13,64 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
     description: "",
     price: "",
     category: "",
+    
   });
 
   useEffect(() => {
     if (isOpen && product) {
       setEditProduct(product);
+    } else if (isOpen && !product) {
+     
+      setEditProduct({
+        id: "",
+        imageUrl: "",
+        title: "",
+        description: "",
+        price: "",
+        category: "",
+        
+      });
     }
   }, [isOpen, product]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditProduct((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSave = () => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You are about to save changes to this product.",
+      title: "Save changes?",
+      text: "You are about to save this product.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, save it!",
     }).then((result) => {
+      console.log(editProduct)
       if (result.isConfirmed) {
-        axios
-          .put(`http://localhost:3000/products/${editProduct.id}`, editProduct)
-          .then(() => {
-            toast.success("Product updated successfully!", {
-              position: "top-right",
-              autoClose: 3000,
-            });
-            onUpdate(editProduct);
-            closeModal(); 
-            Swal.fire("Saved!", "The product has been updated.", "success");
-          })
-          .catch(() => {
-            toast.error("Failed to update product. Please try again.", {
-              position: "top-right",
-              autoClose: 3000,
-            });
-          });
+        const saveProduct = async () => {
+          try {
+            let response;
+            if (editProduct.id) {
+              response = await axios.patch(
+                `http://localhost:3000/products/${editProduct.id}`,
+                editProduct
+              );
+            } else {
+              response = await axios.post(`http://localhost:3000/products`, editProduct);
+            }
+            onUpdate(response.data);
+            toast.success("Product saved successfully!");
+            closeModal();
+          } catch (error) {
+            toast.error("Failed to save the product. Please try again.");
+          }
+        };
+        saveProduct();
       }
     });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditProduct((prevProduct) => ({
-      ...prevProduct,
-      [name]: value,
-    }));
   };
 
   if (!isOpen) return null;
@@ -73,66 +85,48 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          Edit Product - {editProduct.title}
+          {editProduct.id ? `Edit Product` : `Add Product`}
         </h2>
 
         <div className="space-y-4">
-          
+         
           <div>
             <label className="block text-sm font-medium text-gray-700">Title</label>
             <input
               type="text"
-              className="mt-1 w-full border rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500"
               name="title"
               value={editProduct.title}
               onChange={handleChange}
+              className="mt-1 w-full border rounded-lg p-2"
             />
           </div>
-
-        
           <div>
             <label className="block text-sm font-medium text-gray-700">Image URL</label>
             <input
               type="text"
-              className="mt-1 w-full border rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500"
               name="imageUrl"
               value={editProduct.imageUrl}
               onChange={handleChange}
+              className="mt-1 w-full border rounded-lg p-2"
             />
           </div>
-
-         
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              className="mt-1 w-full border rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500"
-              rows="3"
-              name="description"
-              value={editProduct.description}
-              onChange={handleChange}
-            />
-          </div>
-
-          
           <div>
             <label className="block text-sm font-medium text-gray-700">Price</label>
             <input
               type="number"
-              className="mt-1 w-full border rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500"
               name="price"
               value={editProduct.price}
               onChange={handleChange}
+              className="mt-1 w-full border rounded-lg p-2"
             />
           </div>
-
-          
           <div>
             <label className="block text-sm font-medium text-gray-700">Category</label>
             <select
-              className="mt-1 w-full border rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500"
               name="category"
               value={editProduct.category}
               onChange={handleChange}
+              className="mt-1 w-full border rounded-lg p-2"
             >
               <option value="dogfoodall">Dog Food</option>
               <option value="catfoodall">Cat Food</option>
@@ -140,19 +134,12 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
           </div>
         </div>
 
-        
         <div className="flex justify-end mt-6 space-x-4">
-          <button
-            onClick={closeModal}
-            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-          >
+          <button onClick={closeModal} className="px-4 py-2 bg-gray-500 text-white rounded-lg">
             Cancel
           </button>
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Save Changes
+          <button onClick={handleSave} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+            Save
           </button>
         </div>
       </div>

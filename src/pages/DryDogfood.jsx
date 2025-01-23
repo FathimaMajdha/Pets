@@ -26,9 +26,11 @@ const DryDogfood = () => {
     axios
       .get("http://localhost:3000/products")
       .then((response) => {
-        const products = response.data[0]; 
-        const dryDogFood = products.drydogfood || [];
-        setCart(dryDogFood);
+        // Filter products for category `dogfoodall`
+        const dogFoodProducts = response.data.filter(
+          (product) => product.category === "drydogfood"
+        );
+        setCart(dogFoodProducts);
       })
       .catch((error) => {
         console.error("Error fetching products:", error);

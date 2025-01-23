@@ -1,284 +1,233 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ProductModal from "./ProductModal";
 import Sidebar2 from "./Sidebar2";
-import { BsSearch } from "react-icons/bs";
-import ProductModal from "../Admin/ProductModal"; 
-const ProductDetails = () => {
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [searchVal, setSearchVal] = useState("");  
-  const [products, setProducts] = useState({
-    dogfoodall: [],
-    catfoodall: [],
-  });
-  const [currentCategory, setCurrentCategory] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(5);
 
-  const [newProduct, setNewProduct] = useState({
-    id: "",
-    imageUrl: "",
-    title: "",
-    description: "",
-    price: "",
-    category: "",
-  });
+const ProductDetails = () => {
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editProduct, setEditProduct] = useState(null); 
+  const [editProduct, setEditProduct] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 5;
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/products")
-      .then((response) => {
-        const dogFood = response.data[0]?.dogfoodall || [];
-        const catFood = response.data[1]?.catfoodall || [];
-        setProducts({
-          dogfoodall: dogFood,
-          catfoodall: catFood,
-        });
-      })
-      .catch((error) => console.error("Error fetching products:", error));
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/products");
+        setProducts(response.data);
+        setFilteredProducts(response.data);
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+      }
+    };
+    fetchProducts();
   }, []);
 
-  const handleAddNewProduct = () => {
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    filterProducts(value, categoryFilter);
+  };
+
+  const handleCategoryFilter = (e) => {
+    const value = e.target.value;
+    setCategoryFilter(value);
+    filterProducts(searchTerm, value);
+  };
+
+  const filterProducts = (search, category) => {
+    let filtered = products;
+
+    if (category) {
+      filtered = filtered.filter((product) => product.category === category);
+    }
+
+    if (search) {
+      filtered = filtered.filter((product) =>
+        product.title.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    setFilteredProducts(filtered);
+    setCurrentPage(1);
+  };
+
+  const handleEditProduct = (product) => {
+    setEditProduct(product);
     setIsModalOpen(true);
   };
 
-  const handleUpdateProduct = (product) => {
-    setEditProduct(product); 
-    setIsModalOpen(true); 
+  const handleAddProduct = () => {
+    setEditProduct(null);
+    setIsModalOpen(true);
   };
 
-  const handleSaveUpdate = (updatedProduct) => {
-    axios
-      .put(`http://localhost:3000/products/${updatedProduct.id}`, updatedProduct)
-      .then(() => {
-        setProducts((prev) => {
-          const updatedProducts = { ...prev };
-          const productCategory = Object.keys(updatedProducts).find((category) =>
-            updatedProducts[category].some(
-              (product) => product.id === updatedProduct.id
-            )
-          );
-
-          if (productCategory) {
-            updatedProducts[productCategory] = updatedProducts[productCategory].map((product) =>
-              product.id === updatedProduct.id ? updatedProduct : product
-            );
-          }
-
-          return updatedProducts;
-        });
-        setIsModalOpen(false); 
-      })
-      .catch(() => {
-        console.error("Error updating the product!");
-      });
-  };
-
-  
-  const currentProducts = currentCategory === 'all' 
-    ? [...products.dogfoodall, ...products.catfoodall] 
-    : products[currentCategory];
-
- 
-    const filteredProductsList = searchVal
-    ? currentProducts
-        .filter((product) => {
-          const title = product.title ? product.title.toLowerCase() : "";
-          const description = product.description ? product.description.toLowerCase() : "";
-          const category = product.category ? product.category.toLowerCase() : "";
-          return title.includes(searchVal.toLowerCase()) ||
-                 description.includes(searchVal.toLowerCase()) ||
-                 category.includes(searchVal.toLowerCase());
-        })
-        .sort((a, b) => {
-          const aTitle = a.title ? a.title.toLowerCase() : "";
-          const bTitle = b.title ? b.title.toLowerCase() : "";
-          if (aTitle.includes(searchVal.toLowerCase())) return -1;
-          if (bTitle.includes(searchVal.toLowerCase())) return 1;
-          return 0;
-        })
-    : currentProducts;
-
-  
-
-  
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProductsPage = filteredProductsList.slice(indexOfFirstProduct, indexOfLastProduct);
-
-  const totalPages = Math.ceil(filteredProductsList.length / productsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
-
-  const handleSearchClick = () => {
-    if (searchVal === "") {
-      setFilteredProducts([]); 
-    } else {
-      setFilteredProducts(filteredProductsList); 
+  const handleDeleteProduct = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/products/${id}`);
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+      setFilteredProducts((prev) => prev.filter((product) => product.id !== id));
+    } catch (error) {
+      console.error("Failed to delete product", error);
     }
   };
 
+  const handlePageChange = (direction) => {
+    if (direction === "prev" && currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    } else if (
+      direction === "next" &&
+      currentPage < Math.ceil(filteredProducts.length / productsPerPage)
+    ) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
   return (
-    <div className="container mx-auto p-6">
+    <div className="p-4 bg-red-100 h-screen">
       <Sidebar2 />
-      <div className="ml-96">
-        <h1 className="text-2xl font-bold text-center my-6">Product Details</h1>
+      <h1 className="flex justify-center text-2xl font-bold mt-20 mb-10 ml-96 text-gray-800">
+        Product Details
+      </h1>
 
-        {/* Search */}
-        <div className="relative flex-grow">
-          <input
-            type="text"
-            name="search"
-            id="search"
-            placeholder="Search"
-            value={searchVal}  
-            onChange={(e) => setSearchVal(e.target.value)}  
-            onKeyUp={handleSearchClick}  
-            className="bg-white w-full sm:w-[400px] md:w-[200px] lg:w-[200px] px-4 py-3 text-black border border-gray-300 rounded-lg pl-10 -mb-40"
-          />
-          <button
-            type="button"
-            className="absolute left-5 top-6 transform -translate-y-1/2 text-gray-500"
-            aria-label="Search"
-            onClick={handleSearchClick}  
-          >
-            <BsSearch className="handle " />
-          </button>
-        </div>
-
-        
-        <div className="flex justify-center space-x-4 mb-4">
-          <button
-            className="bg-gray-800 text-white px-4 py-2 rounded"
-            onClick={() => setCurrentCategory('dogfoodall')}
-          >
-            Dog Food
-          </button>
-          <button
-            className="bg-gray-800 text-white px-4 py-2 rounded"
-            onClick={() => setCurrentCategory('catfoodall')}
-          >
-            Cat Food
-          </button>
-          <button
-            className="bg-gray-800 text-white px-4 py-2 rounded"
-            onClick={() => setCurrentCategory('all')}
-          >
-            All Products
-          </button>
-        </div>
-
-        
-        <div className="flex justify-end -mt-12">
-          <button
-            className="bg-green-600 text-white px-4 py-2 rounded"
-            onClick={handleAddNewProduct}
-          >
-            Add New Product
-          </button>
-        </div>
-
-       
-        <table className="w-full mt-4 border-collapse border border-gray-200">
-          <thead className="bg-gray-800 text-white">
-            <tr>
-              <th className="px-6 py-3 border">Image</th>
-              <th className="px-6 py-3 border">Title</th>
-              <th className="px-6 py-3 border">Price</th>
-              <th className="px-6 py-3 border">Description</th>
-              <th className="px-6 py-3 border">Actions</th>
+      <div className="mb-4 flex gap-4 ml-80">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="border p-2 rounded-lg w-96 ml-52"
+        />
+        <select
+          value={categoryFilter}
+          onChange={handleCategoryFilter}
+          className="border p-2 rounded-lg ml-10"
+        >
+          <option value="">All Products</option>
+          <option value="dogfoodall">Dog Food</option>
+          <option value="catfoodall">Cat Food</option>
+        </select>
+        <button
+          onClick={handleAddProduct}
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg ml-24"
+        >
+          Add Product
+        </button>
+      </div>
+      <div className="flex justify-center ml-96">
+        <table className="mt-4 border-collapse border border-gray-200 bg-white">
+          <thead>
+            <tr className="bg-gray-800 text-white">
+              <th className="border border-gray-300 p-2">Title</th>
+              <th className="border border-gray-300 p-2">Category</th>
+              <th className="border border-gray-300 p-2">Price</th>
+              <th className="border border-gray-300 p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {currentProductsPage.map((product) => (
+            {currentProducts.map((product) => (
               <tr key={product.id}>
-                <td className="px-6 py-3 border">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.title}
-                    className="w-16 h-16 object-cover mx-auto"
-                  />
-                </td>
-                <td className="px-6 py-3 border">{product.title}</td>
-                <td className="px-6 py-3 border">{product.price}</td>
-                <td className="px-6 py-3 border">{product.description}</td>
-                <div className="col-span mt-10 mb-10">
-                <td className="px-6 py-3 ">
+                <td className="border border-gray-300 p-2">{product.title}</td>
+                <td className="border border-gray-300 p-2">{product.category}</td>
+                <td className="border border-gray-300 p-2">${product.price}</td>
+                <td className="border border-gray-300 p-2">
                   <button
-                    className="bg-blue-600 text-white px-2 py-1 mr-2"
-                    onClick={() => handleUpdateProduct(product)}
+                    onClick={() => handleEditProduct(product)}
+                    className="bg-yellow-500 text-white px-2 py-1 rounded-lg mr-2"
                   >
                     Update
                   </button>
-                  </td>
-                  <td>
                   <button
-                    className="bg-red-600 text-white px-2 py-1 mr-2"
-                    onClick={() => handleDelete(product)}
+                    onClick={() => handleDeleteProduct(product.id)}
+                    className="bg-red-600 text-white px-2 py-1 rounded-lg"
                   >
                     Delete
                   </button>
                 </td>
-                </div>
-                <hr/>
               </tr>
             ))}
           </tbody>
         </table>
-
-        
-        <div className="flex justify-center mt-4">
-          <button
-            className="px-4 py-2 bg-gray-800 text-white rounded"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          {pageNumbers.slice(currentPage - 1, currentPage + 1).map((number) => (
-            <button
-              key={number}
-              className={`px-4 ml-10 mr-10 py-2 bg-gray-300 text-gray-800 rounded ${
-                currentPage === number ? 'bg-blue-600' : ''
-              }`}
-              onClick={() => handlePageChange(number)}
-            >
-              {number}
-            </button>
-          ))}
-          <button
-            className="px-4 py-2 bg-gray-800 text-white rounded"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
-
-        {/* Modal  */}
-        {isModalOpen && (
-          <ProductModal
-            isOpen={isModalOpen}
-            closeModal={() => setIsModalOpen(false)}
-            product={editProduct}
-            handleSave={handleSaveUpdate}
-          />
-        )}
       </div>
+
+      <div className="flex justify-between items-center ml-96 mt-10">
+        <button
+          onClick={() => handlePageChange("prev")}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-lg ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-indigo-600 text-white"
+          }`}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {Math.ceil(filteredProducts.length / productsPerPage)}
+        </span>
+        <button
+          onClick={() => handlePageChange("next")}
+          disabled={
+            currentPage ===
+            Math.ceil(filteredProducts.length / productsPerPage)
+          }
+          className={`px-4 py-2 rounded-lg ${
+            currentPage === Math.ceil(filteredProducts.length / productsPerPage)
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-indigo-600 text-white"
+          }`}
+        >
+          Next
+        </button>
+      </div>
+
+      <ProductModal
+        isOpen={isModalOpen}
+        closeModal={() => setIsModalOpen(false)}
+        product={editProduct}
+        onUpdate={(updatedProduct) => {
+          if (updatedProduct.id) {
+            
+            setProducts((prev) =>
+              prev.map((product) =>
+                product.id === updatedProduct.id ? updatedProduct : product
+              )
+            );
+            setFilteredProducts((prev) =>
+              prev.map((product) =>
+                product.id === updatedProduct.id ? updatedProduct : product
+              )
+            );
+          } else {
+           
+            setProducts((prev) => [...prev, updatedProduct]);
+
+            
+            const newFilteredProducts = [...products, updatedProduct].filter(
+              (product) =>
+                (!categoryFilter || product.category === categoryFilter) &&
+                (!searchTerm ||
+                  product.title.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+
+            setFilteredProducts(newFilteredProducts);
+          }
+        }}
+      />
     </div>
   );
 };
 
 export default ProductDetails;
-
 
 

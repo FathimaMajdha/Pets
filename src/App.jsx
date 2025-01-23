@@ -24,6 +24,7 @@ import ProductDetails from './Admin/ProductDetails.jsx';
 import Users from './Admin/Users.jsx';
 import Ordered from './Admin/Ordered.jsx'
 import ViewDetails from './Admin/ViewDetails.jsx';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => {
   const location = useLocation();
@@ -61,6 +62,7 @@ const App = () => {
           <Route path="/viewdetails/:id" element={<ViewDetails />} />
            
         </Routes>
+        <ToastContainer/>
       </div>
     </div>
   );
