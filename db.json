@@ -204,7 +204,7 @@
     {
       "id": "3",
       "imageUrl": "https://cdn.petsathome.com/public/images/products/900_7118367.jpg",
-      "title": "Pro Plan Vet Diet Hypoallergenic Dry Dog Food 11kg",
+      "title": "Pro Plan Vet Diet Hypoallergenic Dry Dog Food 10kg",
       "description": "Perfect for keeping your dog happy and healthy.",
       "reviews": 4,
       "price": 19.99,
@@ -483,27 +483,11 @@
     },
     {
       "id": "",
-      "imageUrl": "",
-      "title": "dfghjk",
+      "imageUrl": "fghjk",
+      "title": "ghjk",
       "description": "",
-      "price": "456",
-      "category": ""
-    },
-    {
-      "id": "",
-      "imageUrl": "zxc ",
-      "title": "ax",
-      "description": "",
-      "price": "12",
-      "category": ""
-    },
-    {
-      "id": "",
-      "imageUrl": "dcv",
-      "title": "azc ",
-      "description": "",
-      "price": "12",
-      "category": ""
+      "price": "567890",
+      "category": "catfoodall"
     }
   ]
 }

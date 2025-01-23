@@ -12,23 +12,20 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
     title: "",
     description: "",
     price: "",
-    category: "",
-    
+    category: "dogfoodall",
   });
 
   useEffect(() => {
     if (isOpen && product) {
       setEditProduct(product);
     } else if (isOpen && !product) {
-     
       setEditProduct({
         id: "",
         imageUrl: "",
         title: "",
         description: "",
         price: "",
-        category: "",
-        
+        category: "dogfoodall",
       });
     }
   }, [isOpen, product]);
@@ -39,6 +36,11 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
   };
 
   const handleSave = () => {
+    if (!editProduct.title || !editProduct.price) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     Swal.fire({
       title: "Save changes?",
       text: "You are about to save this product.",
@@ -48,7 +50,6 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, save it!",
     }).then((result) => {
-      console.log(editProduct)
       if (result.isConfirmed) {
         const saveProduct = async () => {
           try {
@@ -59,12 +60,25 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
                 editProduct
               );
             } else {
-              response = await axios.post(`http://localhost:3000/products`, editProduct);
+              response = await axios.post(
+                `http://localhost:3000/products`, 
+                {
+                  ...editProduct,
+                  category: editProduct.category || "dogfoodall"
+                }
+              );
             }
-            onUpdate(response.data);
+            if (onUpdate) {
+              onUpdate(response.data);
+            }
+
             toast.success("Product saved successfully!");
-            closeModal();
+
+            if (closeModal) {
+              closeModal();
+            }
           } catch (error) {
+            console.error("Save product error:", error);
             toast.error("Failed to save the product. Please try again.");
           }
         };
@@ -77,7 +91,7 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
 
   return (
     <div
-      className="absolute inset-0 bg-gray-800 bg-opacity-50 z-50 flex justify-center items-center"
+      className="fixed inset-0 bg-gray-800 bg-opacity-50 z-50 flex justify-center items-center"
       onClick={closeModal}
     >
       <div
@@ -89,14 +103,14 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
         </h2>
 
         <div className="space-y-4">
-         
           <div>
-            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <label className="block text-sm font-medium text-gray-700">Title*</label>
             <input
               type="text"
               name="title"
               value={editProduct.title}
               onChange={handleChange}
+              required
               className="mt-1 w-full border rounded-lg p-2"
             />
           </div>
@@ -111,12 +125,13 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Price</label>
+            <label className="block text-sm font-medium text-gray-700">Price*</label>
             <input
               type="number"
               name="price"
               value={editProduct.price}
               onChange={handleChange}
+              required
               className="mt-1 w-full border rounded-lg p-2"
             />
           </div>
@@ -135,10 +150,18 @@ const ProductModal = ({ isOpen, closeModal, product, onUpdate }) => {
         </div>
 
         <div className="flex justify-end mt-6 space-x-4">
-          <button onClick={closeModal} className="px-4 py-2 bg-gray-500 text-white rounded-lg">
+          <button 
+            type="button"
+            onClick={closeModal} 
+            className="px-4 py-2 bg-gray-500 text-white rounded-lg"
+          >
             Cancel
           </button>
-          <button onClick={handleSave} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+          <button 
+            type="button"
+            onClick={handleSave} 
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+          >
             Save
           </button>
         </div>
