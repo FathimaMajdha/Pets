@@ -6,9 +6,11 @@ import { BsSearch } from "react-icons/bs";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);  
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchVal, setSearchVal] = useState("");  
+  const [searchVal, setSearchVal] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
 
   const navigate = useNavigate();
 
@@ -17,7 +19,7 @@ const Users = () => {
       .get("http://localhost:3000/users")
       .then((response) => {
         setUsers(response.data);
-        setFilteredUsers(response.data); 
+        setFilteredUsers(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -26,16 +28,16 @@ const Users = () => {
       });
   }, []);
 
-  
   const handleSearchClick = () => {
     if (searchVal === "") {
-      setFilteredUsers(users);  
+      setFilteredUsers(users);
     } else {
       const filtered = users.filter((user) =>
         user.username.toLowerCase().includes(searchVal.toLowerCase())
       );
-      setFilteredUsers(filtered);  
+      setFilteredUsers(filtered);
     }
+    setCurrentPage(1); 
   };
 
   const toggleButton = (userId, currentStatus) => {
@@ -74,6 +76,17 @@ const Users = () => {
       });
   };
 
+ 
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="bg-red-100 h-screen">
       <Sidebar2 />
@@ -86,16 +99,16 @@ const Users = () => {
             name="search"
             id="search"
             placeholder="Search"
-            value={searchVal}  
-            onChange={(e) => setSearchVal(e.target.value)}  
-            onKeyUp={handleSearchClick}  
+            value={searchVal}
+            onChange={(e) => setSearchVal(e.target.value)}
+            onKeyUp={handleSearchClick}
             className="bg-white w-full sm:w-[400px] md:w-[500px] lg:w-[600px] px-4 py-3 text-black border border-gray-300 rounded-lg pl-10 -mt-24"
           />
           <button
             type="button"
             className="absolute left-5 top-3 transform -translate-y-1/2 text-gray-500"
             aria-label="Search"
-            onClick={handleSearchClick}  
+            onClick={handleSearchClick}
           >
             <BsSearch className="handle" />
           </button>
@@ -112,19 +125,17 @@ const Users = () => {
                   <th scope="col">Orders</th>
                   <th scope="col">User Email</th>
                   <th scope="col">User Password</th>
-                  <th scope="col" className="px-6 py-3">
-                    Actions
-                  </th>
+                  <th scope="col" className="px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => (
+                {currentUsers.map((user) => (
                   <tr key={user.id} className="bg-white border border-black/10">
                     <td className="px-12 py-4">{user.username}</td>
                     <td className="px-12 py-4">{user.orders.length}</td>
                     <td className="px-12 py-4">{user.email}</td>
                     <td className="px-12 py-4">{user.password}</td>
-                    <div>
+                    <div className="col-span">
                     <td className="px-2 py-4">
                       <button
                         onClick={() => toggleButton(user.id, user.isBlocked)}
@@ -171,6 +182,35 @@ const Users = () => {
             </table>
           </div>
         )}
+
+        
+        <div className="flex justify-center mt-4">
+          <button
+            className="px-4 py-2 bg-gray-800 text-white rounded"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              className={`px-4 ml-2 mr-2 py-2 bg-gray-300 text-gray-800 rounded ${
+                currentPage === index + 1 ? 'bg-blue-600' : ''
+              }`}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            className="px-4 py-2 bg-gray-800 text-white rounded"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

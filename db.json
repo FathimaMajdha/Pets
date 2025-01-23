@@ -381,8 +381,8 @@
       "id": "abda",
       "title": "title",
       "imageUrl": "dfghjkl",
-      "description": "dfghj",
-      "price": "34"
+      "description": "dfgh",
+      "price": "njjj"
     },
     {
       "catfoodall": [
@@ -570,7 +570,7 @@
       "title": "Royal Canin Veterinary Hypoallergenic Adult Dry Dog Food",
       "description": "High-quality  food for Dogs.",
       "reviews": 4,
-      "price": 20.29,
+      "price": "2",
       "quantity": 1
     },
     {
@@ -726,27 +726,11 @@
       "category": "dogfoodall"
     },
     {
-      "id": "1234",
-      "imageUrl": "http://ertyu ",
-      "title": "product",
-      "description": "good quality product",
-      "price": "56",
-      "category": "dogfoodall"
-    },
-    {
       "id": "2",
       "imageUrl": "asc",
       "title": "dsx",
       "description": "sd c",
       "price": "98",
-      "category": "dogfoodall"
-    },
-    {
-      "id": "12334",
-      "imageUrl": "v sfer",
-      "title": "scves",
-      "description": "scer",
-      "price": "345",
       "category": "dogfoodall"
     },
     {

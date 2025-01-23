@@ -81,13 +81,26 @@ const ProductDetails = () => {
     : products[currentCategory];
 
  
-  const filteredProductsList = searchVal
-    ? currentProducts.filter((product) =>
-        product.title.toLowerCase().includes(searchVal.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchVal.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchVal.toLowerCase())
-      )
+    const filteredProductsList = searchVal
+    ? currentProducts
+        .filter((product) => {
+          const title = product.title ? product.title.toLowerCase() : "";
+          const description = product.description ? product.description.toLowerCase() : "";
+          const category = product.category ? product.category.toLowerCase() : "";
+          return title.includes(searchVal.toLowerCase()) ||
+                 description.includes(searchVal.toLowerCase()) ||
+                 category.includes(searchVal.toLowerCase());
+        })
+        .sort((a, b) => {
+          const aTitle = a.title ? a.title.toLowerCase() : "";
+          const bTitle = b.title ? b.title.toLowerCase() : "";
+          if (aTitle.includes(searchVal.toLowerCase())) return -1;
+          if (bTitle.includes(searchVal.toLowerCase())) return 1;
+          return 0;
+        })
     : currentProducts;
+
+  
 
   
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -261,7 +274,6 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
-
 
 
 
