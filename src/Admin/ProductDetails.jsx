@@ -211,20 +211,25 @@ const ProductDetails = () => {
                 <td className="px-6 py-3 border">{product.title}</td>
                 <td className="px-6 py-3 border">{product.price}</td>
                 <td className="px-6 py-3 border">{product.description}</td>
-                <td className="px-6 py-3 border">
+                <div className="col-span mt-10 mb-10">
+                <td className="px-6 py-3 ">
                   <button
                     className="bg-blue-600 text-white px-2 py-1 mr-2"
                     onClick={() => handleUpdateProduct(product)}
                   >
                     Update
                   </button>
+                  </td>
+                  <td>
                   <button
-                    className="bg-red-600 text-white px-2 py-1"
+                    className="bg-red-600 text-white px-2 py-1 mr-2"
                     onClick={() => handleDelete(product)}
                   >
                     Delete
                   </button>
                 </td>
+                </div>
+                <hr/>
               </tr>
             ))}
           </tbody>
