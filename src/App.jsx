@@ -23,12 +23,12 @@ import OverView from './Admin/OverView.jsx';
 import ProductDetails from './Admin/ProductDetails.jsx';
 import Users from './Admin/Users.jsx';
 import Ordered from './Admin/Ordered.jsx'
-import ViewDetails from './Admin/ViewDetails.jsx';
+
 import { ToastContainer } from 'react-toastify';
 
 const App = () => {
   const location = useLocation();
-  const hideHeaderFooterRoutes = ["/login", "/register","/payment","/admin","/dashboard","/users","/orders","/products","/viewdetails/:id"];
+  const hideHeaderFooterRoutes = ["/login", "/register","/payment","/admin","/dashboard","/users","/orders","/products"];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -59,7 +59,7 @@ const App = () => {
           <Route path="/users" element={<Users/>}/>
           <Route path="/orders" element={<Ordered/>}/> 
           <Route path="/products" element={<ProductDetails/>}/> 
-          <Route path="/viewdetails/:id" element={<ViewDetails />} />
+        
            
         </Routes>
         <ToastContainer/>

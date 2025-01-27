@@ -36,58 +36,57 @@ const Ordered = () => {
                   <td className="border border-gray-400 px-4 py-2">{user.username}</td>
                   <td className="border border-gray-400 px-4 py-2">
                     {user.orders && user.orders.length > 0 ? (
-                      <table className="table-auto border-collapse w-full">
-                        <thead>
-                          <tr className="bg-gray-200">
-                            <th className="border border-gray-400 px-2 py-1">Items</th>
-                            <th className="border border-gray-400 px-2 py-1">Price</th>
-                            <th className="border border-gray-400 px-2 py-1">Total Amount</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {user.orders.map((order, orderIndex) => {
-                           
-                            const totalAmount = order.cartItems
-                              ? order.cartItems.reduce(
-                                  (sum, item) => sum + item.price * item.quantity,
-                                  0
-                                )
-                              : 0;
+                      <div>
+                        {user.orders.map((order, orderIndex) => {
+                          const totalAmount = order.cartItems
+                            ? order.cartItems.reduce(
+                                (sum, item) => sum + item.price * item.quantity,
+                                0
+                              )
+                            : 0;
 
-                            return (
-                              <tr key={orderIndex}>
-                                <td className="border border-gray-400 px-2 py-1">
-                                  <ul>
-                                    {order.cartItems ? (
-                                      order.cartItems.map((item) => (
-                                        <li key={item.id}>
+                          return (
+                            <div key={orderIndex} className="mb-4">
+                              <p className="font-semibold text-lg">Order #{orderIndex + 1}</p>
+                              <table className="table-auto border-collapse w-full mt-2">
+                                <thead>
+                                  <tr className="bg-gray-200">
+                                    <th className="border border-gray-400 px-2 py-1">Items</th>
+                                    <th className="border border-gray-400 px-2 py-1">Price</th>
+                                    <th className="border border-gray-400 px-2 py-1">Total Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {order.cartItems ? (
+                                    order.cartItems.map((item) => (
+                                      <tr key={item.id}>
+                                        <td className="border border-gray-400 px-2 py-1">
                                           {item.title} (x{item.quantity})
-                                        </li>
-                                      ))
-                                    ) : (
-                                      <li>No items in this order</li>
-                                    )}
-                                  </ul>
-                                </td>
-                                <td className="border border-gray-400 px-2 py-1">
-                                  <ul>
-                                    {order.cartItems ? (
-                                      order.cartItems.map((item) => (
-                                        <li key={item.id}>£{item.price.toFixed(2)}</li>
-                                      ))
-                                    ) : (
-                                      <li>-</li>
-                                    )}
-                                  </ul>
-                                </td>
-                                <td className="border border-gray-400 px-2 py-1">
-                                  £{totalAmount.toFixed(2)}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                                        </td>
+                                        <td className="border border-gray-400 px-2 py-1">
+                                          £{item.price.toFixed(2)}
+                                        </td>
+                                        <td className="border border-gray-400 px-2 py-1">
+                                          £{(item.price * item.quantity).toFixed(2)}
+                                        </td>
+                                      </tr>
+                                    ))
+                                  ) : (
+                                    <tr>
+                                      <td className="border border-gray-400 px-2 py-1" colSpan="3">
+                                        No items in this order
+                                      </td>
+                                    </tr>
+                                  )}
+                                </tbody>
+                              </table>
+                              <p className="mt-2 text-right font-semibold">
+                                Total Order Amount: £{totalAmount.toFixed(2)}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
                     ) : (
                       <p className="text-gray-500">No orders available</p>
                     )}
@@ -105,4 +104,5 @@ const Ordered = () => {
 };
 
 export default Ordered;
+
 

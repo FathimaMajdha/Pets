@@ -10,8 +10,9 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [searchVal, setSearchVal] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); // Selected user data for modal
   const usersPerPage = 5;
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const Users = () => {
       );
       setFilteredUsers(filtered);
     }
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const toggleButton = (userId, currentStatus) => {
@@ -76,7 +77,16 @@ const Users = () => {
       });
   };
 
- 
+  const handleModalOpen = (user) => {
+    setSelectedUser(user);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedUser(null);
+  };
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -135,7 +145,7 @@ const Users = () => {
                     <td className="px-12 py-4">{user.orders.length}</td>
                     <td className="px-12 py-4">{user.email}</td>
                     <td className="px-12 py-4">{user.password}</td>
-                    <div className="col-span">
+                    <div>
                     <td className="px-2 py-4">
                       <button
                         onClick={() => toggleButton(user.id, user.isBlocked)}
@@ -151,7 +161,7 @@ const Users = () => {
                     </td>
                     <td className="px-2 py-4">
                       <button
-                        onClick={() => navigate(`/viewdetails/${user.id}`)}
+                        onClick={() => handleModalOpen(user)}
                         style={{
                           backgroundColor: "green",
                           color: "white",
@@ -183,7 +193,6 @@ const Users = () => {
           </div>
         )}
 
-        
         <div className="flex justify-center mt-4">
           <button
             className="px-4 py-2 bg-gray-800 text-white rounded"
@@ -211,10 +220,54 @@ const Users = () => {
             Next
           </button>
         </div>
+
+       {showModal && selectedUser && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg max-w-lg w-full">
+      <h2 className="text-2xl font-bold">User Details</h2>
+      <p><strong>Username:</strong> {selectedUser.username}</p>
+      <p><strong>Status:</strong> {selectedUser.isBlocked ? "Blocked" : "Active"}</p>
+      <p><strong>Total Orders:</strong> {selectedUser.orders.length}</p>
+      <h3 className="text-xl font-semibold mt-4">Order Details</h3>
+      
+      {/* Scrollable area for orders */}
+      <div className="max-h-60 overflow-y-auto">
+      <h4 className="mt-2">Cart Items:</h4>
+        {selectedUser.orders.length > 0 ? (
+          selectedUser.orders.map((order) => (
+            
+            <div key={order.orderId} className="mt-4">
+              
+              {order.cartItems.map((item, idx) => (
+                <div key={idx} className="mt-2">
+                  <p><strong>Title:</strong> {item.title}</p>
+                  <p><strong>Price:</strong> ${item.price.toFixed(2)}</p>
+                  <p><strong>Price:</strong> ${item.quantity}</p>
+                  <p><strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
+          ))
+        ) : (
+          <p>No orders available.</p>
+        )}
+      </div>
+
+      <button
+        onClick={handleModalClose}
+        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   );
 };
 
 export default Users;
+
 

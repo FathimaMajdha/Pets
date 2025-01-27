@@ -8,7 +8,6 @@ import { useNavigate, Link } from "react-router-dom";
 import Sidebar from "../Components/Sidebar";
 import { CartContext } from "../Features/ContextProvider";
 
-
 const Navbar = () => {
   const { cart = [] } = useContext(CartContext);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -16,7 +15,6 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const items = ["Dog Food", "Cat Food", "Offers"];
-
   const icons = [
     <LuTextSearch />,
     <FaPaw />,
@@ -33,89 +31,79 @@ const Navbar = () => {
     { name: "Order", path: "/order" },
   ];
 
-  const handleSignIn = () => {
-    navigate("/login");
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const handleSignIn = () => navigate("/login");
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleInputChange = (e) => {
     const input = e.target.value.toLowerCase();
-    if (input) {
-      const filtered = items.filter((item) =>
-        item.toLowerCase().includes(input)
-      );
-      setFilteredItems(filtered);
-    } else {
-      setFilteredItems([]);
-    }
+    setFilteredItems(
+      input ? items.filter((item) => item.toLowerCase().includes(input)) : []
+    );
   };
 
   const handleItemClick = (item) => {
-    if (item === "Dog Food") {
-      navigate("/dogfood");
-    } else if (item === "Cat Food") {
-      navigate("/catfood");
-    } else if (item === "Offers") {
-      navigate("/offers");
-    }
+    const paths = {
+      "Dog Food": "/dogfood",
+      "Cat Food": "/catfood",
+      Offers: "/offers",
+    };
+    navigate(paths[item]);
     setFilteredItems([]);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const input = e.target.search.value.trim();
-    if (input) {
-      if (!items.some(item => item.toLowerCase() === input.toLowerCase())) {
-        navigate("/result-not-found");
-      } else {
-        handleItemClick(input);
-      }
+    if (input && !items.some((item) => item.toLowerCase() === input.toLowerCase())) {
+      navigate("/result-not-found");
+    } else if (input) {
+      handleItemClick(input);
     }
     e.target.reset();
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("userId");
-    localStorage.removeItem("username");
+    localStorage.clear();
     navigate("/");
   };
 
   const username = localStorage.getItem("username");
 
   return (
-    <div>
-      <div className="flex items-center ml-4 mt-10 sm:ml-8 lg:ml-12">
+    <div className="w-full">
+      {/* Top Navbar */}
+      <div className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-12 bg-gray-100">
+        {/* Logo */}
         <Link to="/" className="text-gray-800 font-devonshire text-2xl sm:text-3xl md:text-4xl">
           PetsFood
         </Link>
-        <div className="relative ml-4 sm:ml-8 md:ml-60 flex-grow">
-          <form onSubmit={handleSubmit}>
+
+        {/* Search Bar */}
+        <div className="relative flex-grow mx-4 sm:mx-6 lg:mx-12">
+          <form onSubmit={handleSubmit} className="relative">
             <input
               type="text"
               name="search"
               id="search"
-              placeholder="Search your product"
+              placeholder="    Search your product"
               onChange={handleInputChange}
-              className="bg-white w-full sm:w-[400px] md:w-[500px] lg:w-[600px] px-4 py-3 text-black border border-gray-300 rounded-lg pl-10"
+              className="w-full sm:w-[300px] md:w-[400px] lg:w-[500px] px-4 py-2 text-sm sm:text-base text-black border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
             />
             <button
               type="submit"
-              className="absolute left-5 top-6 transform -translate-y-1/2 text-gray-500"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
               aria-label="Search"
             >
               <BsSearch />
             </button>
           </form>
           {filteredItems.length > 0 && (
-            <ul className="ml-10">
+            <ul className="absolute bg-white shadow-lg rounded-lg mt-2 z-10">
               {filteredItems.map((item, index) => (
                 <li
                   key={index}
                   onClick={() => handleItemClick(item)}
-                  style={{ cursor: "pointer" }}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >
                   {item}
                 </li>
@@ -124,35 +112,43 @@ const Navbar = () => {
           )}
         </div>
 
-        <div style={{ marginRight: "50px" }}>
+        {/* User and Cart */}
+        <div className="flex items-center space-x-4">
           {username ? (
             <div>
-              <span className="mr-4">{`Hello, ${username}`}</span>
-              <button onClick={handleLogout} className="text-red-500 ">Logout</button>
+              <span className="text-sm sm:text-base">{`Hello, ${username}`}</span>
+              <button
+                onClick={handleLogout}
+                className="text-red-500 text-sm sm:text-base hover:underline ml-2"
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <button onClick={handleSignIn}>
-              <MdOutlineAccountCircle className="text-4xl" />
+              <MdOutlineAccountCircle className="text-3xl sm:text-4xl text-gray-700" />
             </button>
           )}
-        </div>
-
-        <div >
-          <Link to="/cart" className="ml-9  ">
-            {cart.length}
-            <BsCart4 className="text-4xl mr-44 " />
+          <Link to="/cart" className="relative">
+            <BsCart4 className="text-3xl sm:text-4xl text-gray-700" />
+            {cart.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                {cart.length}
+              </span>
+            )}
           </Link>
         </div>
       </div>
 
-      <div className="bg-white px-4 py-2 mt-4">
-        <ul className="flex flex-wrap justify-start space-x-5 sm:space-x-3 lg:space-x-5">
+      {/* Bottom Navbar */}
+      <div className="bg-white px-4 py-2">
+        <ul className="flex flex-wrap justify-start space-x-4 sm:space-x-6 lg:space-x-8">
           {menuItems.map((item, index) => (
-            <li key={index} className="flex items-center mb-2 sm:mb-4">
+            <li key={index}>
               {item.name === "Shop" ? (
                 <button
                   onClick={toggleSidebar}
-                  className="flex items-center text-black text-xs sm:text-sm lg:text-base font-medium px-2 py-1 hover:text-gray-700"
+                  className="flex items-center text-gray-800 text-sm sm:text-base font-medium hover:text-gray-600"
                 >
                   <span className="mr-2">{icons[index]}</span>
                   {item.name}
@@ -160,7 +156,7 @@ const Navbar = () => {
               ) : (
                 <Link
                   to={item.path}
-                  className="flex items-center text-black text-xs sm:text-sm lg:text-base font-medium px-2 py-1 hover:text-gray-700"
+                  className="flex items-center text-gray-800 text-sm sm:text-base font-medium hover:text-gray-600"
                 >
                   <span className="mr-2">{icons[index]}</span>
                   {item.name}
