@@ -5,19 +5,19 @@ import axios from "axios";
 const Order = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userId, orderDetails } = location.state || {}; // Pass userId dynamically
+  const { userId, orderDetails } = location.state || {}; 
 
-  const [orders, setOrders] = useState([]); // Stores all user orders
-  const [order, setOrder] = useState(orderDetails); // Current order
+  const [orders, setOrders] = useState([]); 
+  const [order, setOrder] = useState(orderDetails); 
 
   useEffect(() => {
-    // Fetch orders for all users
+    
     const fetchOrders = async () => {
       try {
         const response = await axios.get("http://localhost:3000/users");
-        const user = response.data.find((user) => user.id === userId); // Find the current user
+        const user = response.data.find((user) => user.id === userId); 
         if (user) {
-          setOrders(user.orders || []); // Set the current user's orders
+          setOrders(user.orders || []); 
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -33,11 +33,11 @@ const Order = () => {
       const user = response.data.find((user) => user.id === userId);
 
       if (user) {
-        // Update orders for the current user
+        
         user.orders = updatedOrders;
         await axios.put(`http://localhost:3000/users/${userId}`, user);
         console.log("Orders updated successfully!");
-        setOrders(updatedOrders); // Update the local state
+        setOrders(updatedOrders); 
       }
     } catch (error) {
       console.error("Error updating orders in the database:", error);
@@ -47,8 +47,8 @@ const Order = () => {
   const removeOrder = async () => {
     const updatedOrders = orders.filter((userOrder) => userOrder.orderId !== order.orderId);
     await updateOrdersInDB(updatedOrders);
-    setOrder(null); // Clear the current order
-    navigate("/"); // Navigate to another page
+    setOrder(null); 
+    navigate("/"); 
   };
 
   const updateQuantity = (index, change) => {
