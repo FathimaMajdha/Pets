@@ -73,7 +73,6 @@ const Navbar = () => {
     <div className="w-full">
       {/* Top Navbar */}
       <div className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-12 bg-gray-100">
-        {/* Logo */}
         <Link to="/" className="text-gray-800 font-devonshire text-2xl sm:text-3xl md:text-4xl">
           PetsFood
         </Link>

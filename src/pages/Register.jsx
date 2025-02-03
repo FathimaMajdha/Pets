@@ -1,11 +1,14 @@
+
 import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { fetchRegisteredUser } from './RegisterSlice';
 
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const validationSchema = Yup.object({
     username: Yup.string().required("Username is required"),
@@ -16,45 +19,10 @@ const Register = () => {
       .required("Phone number is required"),
   });
 
-  const handleSubmit = async (values, { resetForm }) => {
-    try {
-      const response = await axios.get("http://localhost:3000/users");
-      const existingUsers = response.data;
-
-     
-      const userExists = existingUsers.some(
-        (user) => user.email === values.email || user.username === values.username
-      );
-
-      if (userExists) {
-        alert("User already exists. Please use a different email or username.");
-      } else {
-        
-        const newUser = {
-          ...values,
-          cart: [],
-          orders: [],
-          isBlocked:false,
-        };
-
-        const registerResponse = await axios.post("http://localhost:3000/users", newUser);
-
-        if (registerResponse.status === 201) {
-          console.log("User registered successfully:", registerResponse.data);
-
-          
-          localStorage.setItem("userId", registerResponse.data.id);
-
-          alert("User registered successfully!");
-          resetForm();
-          navigate("/login");
-        } else {
-          throw new Error("Failed to register. Please try again.");
-        }
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
-      alert("An error occurred while registering. Please try again later.");
+  const handleSubmit = async (values) => {
+    const result = await dispatch(fetchRegisteredUser(values));
+    if (fetchRegisteredUser.fulfilled.match(result)) {
+      navigate("/login");
     }
   };
 
@@ -64,16 +32,6 @@ const Register = () => {
         <div className="max-md:order-1 flex flex-col justify-center space-y-16 min-h-full bg-gradient-to-r from-gray-900 to-gray-700 lg:px-8 px-4 py-4">
           <div>
             <h4 className="text-white text-lg">Create Your Account</h4>
-            <p className="text-[13px] text-gray-300 mt-3 leading-relaxed">
-              Welcome to our registration page! Get started by creating your account.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-white text-lg">Simple & Secure Registration</h4>
-            <p className="text-[13px] text-gray-300 mt-3 leading-relaxed">
-              Our registration process is designed to be straightforward and secure. We prioritize your privacy and data
-              security.
-            </p>
           </div>
         </div>
 
@@ -96,73 +54,53 @@ const Register = () => {
               <div className="space-y-6">
                 <div>
                   <label className="text-gray-600 text-sm mb-2 block">Username</label>
-                  <div className="relative">
-                    <Field
-                      name="username"
-                      type="text"
-                      autoComplete="current-username"
-                      className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md outline-blue-500 ${
-                        errors.username && touched.username ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder={touched.username && errors.username ? errors.username : "Enter username"}
-                    />
-                  </div>
+                  <Field
+                    name="username"
+                    type="text"
+                    className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md ${
+                      errors.username && touched.username ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
                 </div>
 
                 <div>
                   <label className="text-gray-600 text-sm mb-2 block">Email</label>
-                  <div className="relative">
-                    <Field
-                      name="email"
-                      type="email"
-                      autoComplete="current-email"
-                      className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md outline-blue-500 ${
-                        errors.email && touched.email ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder={touched.email && errors.email ? errors.email : "Enter email"}
-                    />
-                  </div>
+                  <Field
+                    name="email"
+                    type="email"
+                    className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md ${
+                      errors.email && touched.email ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
                 </div>
 
                 <div>
                   <label className="text-gray-600 text-sm mb-2 block">Password</label>
-                  <div className="relative">
-                    <Field
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
-                      className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md outline-blue-500 ${
-                        errors.password && touched.password ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder={touched.password && errors.password ? errors.password : "Enter password"}
-                    />
-                  </div>
+                  <Field
+                    name="password"
+                    type="password"
+                    className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md ${
+                      errors.password && touched.password ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
                 </div>
 
                 <div>
                   <label className="text-gray-600 text-sm mb-2 block">Phone Number</label>
-                  <div className="relative">
-                    <Field
-                      name="phoneNumber"
-                      type="text"
-                      autoComplete="current-phoneNumber"
-                      className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md outline-blue-500 ${
-                        errors.phoneNumber && touched.phoneNumber ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder={
-                        touched.phoneNumber && errors.phoneNumber
-                          ? errors.phoneNumber
-                          : "Enter your phone number"
-                      }
-                    />
-                  </div>
+                  <Field
+                    name="phoneNumber"
+                    type="text"
+                    className={`text-gray-800 bg-white border w-full text-sm pl-4 pr-8 py-2.5 rounded-md ${
+                      errors.phoneNumber && touched.phoneNumber ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
                 </div>
               </div>
 
               <div className="sm:!mt-12 mt-6">
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 tracking-wider text-sm rounded-md text-white bg-gray-700 hover:bg-gray-800 focus:outline-none"
+                  className="w-full py-2.5 px-4 tracking-wider text-sm rounded-md text-white bg-gray-700 hover:bg-gray-800"
                 >
                   Create an account
                 </button>
@@ -176,3 +114,4 @@ const Register = () => {
 };
 
 export default Register;
+

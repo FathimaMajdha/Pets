@@ -232,6 +232,24 @@
         }
       ],
       "isBlocked": false
+    },
+    {
+      "id": "33c3",
+      "username": "salih",
+      "email": "salih@gmail.com",
+      "password": "456789",
+      "phoneNumber": "0987654321",
+      "cart": [],
+      "orders": [],
+      "isBlocked": false
+    },
+    {
+      "id": "c3e5",
+      "username": "jameela",
+      "email": "jameela@gmail.com",
+      "password": "678901",
+      "phoneNumber": "3456789012",
+      "isBlocked": false
     }
   ],
   "products": [
