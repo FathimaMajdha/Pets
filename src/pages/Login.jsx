@@ -19,7 +19,7 @@ const Login = () => {
     const result = await dispatch(fetchLoginUser(values));
 
     if (fetchLoginUser.fulfilled.match(result)) {
-      navigate(user ? "/dashboard" : "/");
+      navigate(isAdmin ? "/dashboard" : "/");
     }
   };
 
