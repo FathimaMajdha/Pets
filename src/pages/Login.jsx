@@ -17,12 +17,16 @@ const Login = () => {
 
   const handleSubmit = async (values) => {
     const result = await dispatch(fetchLoginUser(values));
-
+  
     if (fetchLoginUser.fulfilled.match(result)) {
-      navigate(isAdmin ? "/dashboard" : "/");
+      if (result.payload.isAdmin) {
+        navigate("/dashboard");
+      } else {
+        navigate("/"); 
+      }
     }
   };
-
+  
   return (
     <div className="flex justify-center items-center h-screen bg-gray-800">
       <div className="main bg-white rounded-lg shadow-md p-10 w-96 text-center">
