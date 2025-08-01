@@ -137,7 +137,7 @@ const DryCatfood = () => {
               {products.map((item) => (
                 <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden relative">
                   <img
-                    className="w-full h-48 object-cover"
+                    className="w-80 h-48 object-cover ml-14"
                     src={item.imageUrl}
                     alt={item.productName}
                   />

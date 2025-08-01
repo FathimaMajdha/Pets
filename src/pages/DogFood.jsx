@@ -164,7 +164,7 @@ const DogFood = () => {
           {products.length > 0 ? (
             products.map((item) => (
               <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden relative">
-                <img className="w-full h-48 object-cover" src={item.imageUrl} alt={item.productName} />
+                <img className="w-80 h-48 object-cover ml-14" src={item.imageUrl} alt={item.productName} />
                 <button
                   className="absolute top-3 right-3 bg-white rounded-full p-2 shadow"
                   onClick={() => toggleWishlist(item.id)}

@@ -8,6 +8,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { useCart } from "../Features/ContextProvider";
 import { useLayout } from "../Features/LayoutContext";
 
+
 const Cart = () => {
   const { dispatch } = useCart();
   const { user, token } = useAuth();
@@ -16,6 +17,7 @@ const Cart = () => {
   const [quantities, setQuantities] = useState({});
   const [selectedItems, setSelectedItems] = useState({});
   const { isSidebarOpen, isSearchOpen } = useLayout();
+const [recentlyUpdatedId, setRecentlyUpdatedId] = useState(null);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -57,10 +59,27 @@ const Cart = () => {
   }, [user, token]);
 
   const handleQuantityChange = (id, newQuantity) => {
-    if (newQuantity >= 1) {
-      setQuantities((prev) => ({ ...prev, [id]: newQuantity }));
-    }
-  };
+  if (newQuantity >= 1) {
+    setQuantities((prev) => {
+      const oldQuantity = prev[id];
+      const updated = { ...prev, [id]: newQuantity };
+
+      if (oldQuantity !== newQuantity) {
+        setRecentlyUpdatedId(id);  
+      }
+
+      return updated;
+    });
+  }
+};
+
+useEffect(() => {
+  if (recentlyUpdatedId) {
+    toast.info("Quantity updated", { autoClose: 200 });
+    setRecentlyUpdatedId(null); 
+  }
+}, [recentlyUpdatedId]);
+
 
   const handleRemove = async (id) => {
     try {
@@ -121,6 +140,8 @@ const Cart = () => {
     });
   };
 
+
+  
   return (
     <div className="container mx-auto p-6">
        {!isSidebarOpen && !isSearchOpen && <BackHeader title="Back" />}
