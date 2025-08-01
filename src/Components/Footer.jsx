@@ -20,13 +20,13 @@ const Footer = () => {
   const tweetList = [{ desc: "Personalised offers & savings" }];
 
   return (
-    <footer className="bg-[#1B1833] text-white">
+    <footer className="bg-[#222222] text-white ">
       <div className="py-10">
       <p className="font-devonshire text-6xl  mb-3 text-center">PetsFood</p>
-          {/* Customer Support Section */}
+         
         <div className="container mx-auto flex flex-col md:flex-row justify-center lg:justify-evenly gap-10 relative">
         
-          <div className="flex-1 text-center lg:text-left">
+          <div className="flex-1 text-center lg:text-left ml-3">
             <h4 className="text-xl font-semibold mb-4">{ItemTitle}</h4>
             <ul className="space-y-2">
               {ItemList.map((val, i) => (
@@ -40,7 +40,7 @@ const Footer = () => {
            
           </div>
 
-          {/* Join Our Petsfood Section */}
+          
           <div className="flex-1 text-center lg:text-left lg:ml-60">
             <h4 className="text-xl font-semibold mb-4">{tweetTitle}</h4>
             <ul className="space-y-2">
@@ -69,8 +69,8 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Footer Bottom */}
-      <div className="bg-[#1B1833] py-4">
+      
+      <div className="bg-[#222222] py-4">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <p className="text-center md:text-left text-sm">
             &copy; 2025 Pets at Home Ltd Company No. 01822577. All rights reserved.

@@ -4,7 +4,8 @@ import { FaAngleRight } from 'react-icons/fa';
 const Sidebar = ({ closeSidebar }) => {
   const dogFoodRef = useRef(null);
   const catFoodRef = useRef(null);
-  const offersRef = useRef(null);
+  
+  const wishlistRef=useRef(null);
   const scrollAmount = 400;
 
   
@@ -29,17 +30,18 @@ const Sidebar = ({ closeSidebar }) => {
       </div>
 
       <ul className='mt-3 text-gray-800 font-bold'>
+
         <li className='mb-2 rounded py-2'>
-          <a href="/offers" className='px-3'>
-            Offers
+          <a href="/wishlist" className='px-3'>
+            WishList
             <div
-              ref={offersRef}
+              ref={wishlistRef}
               className="flex overflow-x-auto scroll-smooth max-w-[1200px] gap-[20px]"
             />
             <button
               className="text-gray border-none rounded-full w-[30px] h-[30px] flex justify-center items-center cursor-pointer ml-[340px]"
               onClick={() => {
-                offersRef.current.scrollLeft += scrollAmount;
+                dogFoodRef.current.scrollLeft += scrollAmount;
               }}
             >
               <FaAngleRight className="w-[24px] h-[24px]" />

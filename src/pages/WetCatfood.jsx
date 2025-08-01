@@ -9,11 +9,11 @@ import "react-toastify/dist/ReactToastify.css";
 import BackHeader from "../Components/BackHeader";
 import { useLayout } from "../Features/LayoutContext";
 
-const WetDogfood = () => {
+const WetCatfood = () => {
   const { user } = useAuth();
   const { dispatch } = useCart();
   const { wishlist = [], wishlistDispatch, addToWishlist } = useWishlist();
-  const { isSidebarOpen, isSearchOpen } = useLayout();
+  const { isSidebarOpen } = useLayout();
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [sortOption, setSortOption] = useState("");
@@ -27,8 +27,10 @@ const WetDogfood = () => {
     axiosInstance
       .get("/Product/all")
       .then((response) => {
-        const wetDogFood = response.data.data?.filter((product) => product.categoryName?.toLowerCase() === "wetdogfood");
-        setProducts(wetDogFood || []);
+        const wetCatFood = response.data.data?.filter(
+          (product) => product.categoryName?.toLowerCase() === "wetcatfood"
+        );
+        setProducts(wetCatFood || []);
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
@@ -67,21 +69,23 @@ const WetDogfood = () => {
       toast.success("Added to cart!", {
         toastId: "cart-toast",
         position: "top-right",
-        autoClose: 1500,
+        autoClose: 2000,
         closeOnClick: true,
-        pauseOnHover: false,
       });
 
       closeModal();
     } catch (error) {
       console.error("Add to cart failed:", error);
       toast.error(
-        error.response?.status === 401 ? "Unauthorized. Please login again." : "Server error while adding to cart."
+        error.response?.status === 401
+          ? "Unauthorized. Please login again."
+          : "Server error while adding to cart."
       );
     }
   };
 
-  const isInWishlist = (productId) => wishlist.some((item) => item.productId === productId || item.id === productId);
+  const isInWishlist = (productId) =>
+    wishlist.some((item) => item.productId === productId || item.id === productId);
 
   const toggleWishlist = async (productId) => {
     if (!user?.id) {
@@ -105,23 +109,12 @@ const WetDogfood = () => {
 
   return (
     <div>
-      {!isSidebarOpen && !isSearchOpen && <BackHeader title="Back" />}
-      <ToastContainer
-        position="top-right"
-        autoClose={1500}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover={false}
-      />
-
-      <div className="relative">
-        <img className="w-full h-[400px] object-cover" src="dogcatimg.jpg" alt="Dog Food" />
-        <div className="absolute top-40 left-10">
-          <b className="text-[46px] text-white drop-shadow-md">Wet Dog Foods</b>
+      {!isSidebarOpen && <BackHeader title="Back to Catfoods" />}
+      <ToastContainer />
+      <div>
+        <img className="w-full h-[400px] object-cover" src="dogcatimg.jpg" alt="Cat Food" />
+        <div className="absolute top-80 left-10">
+          <b className="text-[46px] text-white drop-shadow-md">Wet Cat Foods</b>
         </div>
       </div>
 
@@ -143,7 +136,12 @@ const WetDogfood = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((item) => (
                 <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden relative">
-                  <img className="w-full h-48 object-cover" src={item.imageUrl} alt={item.productName} />
+                  <img
+                    className="w-full h-48 object-cover"
+                    src={item.imageUrl}
+                    alt={item.productName}
+                  />
+
                   <button
                     className="absolute top-3 right-3 bg-white rounded-full p-2 shadow"
                     onClick={() => toggleWishlist(item.id)}
@@ -158,8 +156,13 @@ const WetDogfood = () => {
 
                   <div className="p-4">
                     <h2 className="text-lg font-bold text-gray-800 mb-2">{item.productName}</h2>
-                    <p className="text-gray-600 text-sm mb-2">{item.description?.slice(0, 50) || "No description"}...</p>
-                    <button className="bg-black text-white px-4 py-2 rounded" onClick={() => openModal(item)}>
+                    <p className="text-gray-600 text-sm mb-2">
+                      {item.description?.slice(0, 50) || "No description"}...
+                    </p>
+                    <button
+                      className="bg-black text-white px-4 py-2 rounded"
+                      onClick={() => openModal(item)}
+                    >
                       View
                     </button>
                   </div>
@@ -202,4 +205,4 @@ const WetDogfood = () => {
   );
 };
 
-export default WetDogfood;
+export default WetCatfood;

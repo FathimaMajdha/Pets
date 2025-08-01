@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import ProductModal from "./ProductModal";
 import Sidebar2 from "./Sidebar2";
+import AddCategoryModal from "./AddCategoryModal";
 
 const ProductDetails = () => {
   const [products, setProducts] = useState([]);
@@ -10,54 +11,85 @@ const ProductDetails = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 5;
+  const [categories, setCategories] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const productsPerPage = 4;
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/products");
-        setProducts(response.data);
-        setFilteredProducts(response.data);
-      } catch (error) {
-        console.error("Failed to fetch products", error);
-      }
-    };
-    fetchProducts();
+    fetchProducts(currentPage, productsPerPage, categoryFilter);
+    fetchCategories();
   }, []);
+
+  const fetchProducts = async (page = 1, pageSize = productsPerPage, category = categoryFilter) => {
+    try {
+      const response = await axiosInstance.get(
+        `/admin/products/paginated?page=${page}&pageSize=${pageSize}&category=${category}`
+      );
+
+      const data = response.data?.data;
+      setFilteredProducts(data?.items || []);
+      setTotalCount(data?.totalCount || 0);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Failed to fetch paginated products:", error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axiosInstance.get("/category");
+      setCategories(Array.isArray(response.data.data) ? response.data.data : []);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
+
+  const searchProductsBackend = async (search, category = categoryFilter) => {
+    try {
+      if (search.trim() === "") {
+        fetchProducts(1, productsPerPage, category);
+        return;
+      }
+
+      const response = await axiosInstance.get(`/admin/search?keyword=${search}`);
+      let data = Array.isArray(response.data?.data) ? response.data.data : [];
+
+      if (category) {
+        const catLower = category.toLowerCase();
+        data = data.filter((product) => {
+          const prodCat = product.categoryName?.toLowerCase();
+          if (catLower === "dogfoodall") {
+            return ["dogfoodall", "drydogfood", "wetdogfood"].includes(prodCat);
+          }
+          if (catLower === "catfoodall") {
+            return ["catfoodall", "drycatfood", "wetcatfood"].includes(prodCat);
+          }
+          return prodCat === catLower;
+        });
+      }
+
+      setFilteredProducts(data);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Search failed:", error);
+    }
+  };
 
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    filterProducts(value, categoryFilter);
+    value.trim() ? searchProductsBackend(value, categoryFilter) : fetchProducts(1, productsPerPage, categoryFilter);
   };
 
   const handleCategoryFilter = (e) => {
     const value = e.target.value;
     setCategoryFilter(value);
-    filterProducts(searchTerm, value);
-  };
-
-  const filterProducts = (search, category) => {
-    let filtered = products;
-
-    if (category) {
-      filtered = filtered.filter((product) => product.category === category);
-    }
-
-    if (search) {
-      filtered = filtered.filter((product) =>
-        product.title.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    setFilteredProducts(filtered);
-    setCurrentPage(1);
-  };
-
-  const handleEditProduct = (product) => {
-    setEditProduct(product);
-    setIsModalOpen(true);
+    searchTerm.trim()
+      ? searchProductsBackend(searchTerm, value)
+      : fetchProducts(1, productsPerPage, value);
   };
 
   const handleAddProduct = () => {
@@ -65,169 +97,249 @@ const ProductDetails = () => {
     setIsModalOpen(true);
   };
 
+  const handleEditProduct = (product) => {
+    setEditProduct(product);
+    setIsModalOpen(true);
+  };
+
   const handleDeleteProduct = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+
     try {
-      await axios.delete(`http://localhost:3000/products/${id}`);
-      setProducts((prev) => prev.filter((product) => product.id !== id));
-      setFilteredProducts((prev) => prev.filter((product) => product.id !== id));
+      await axiosInstance.delete(`/admin/products/${id}`);
+      fetchProducts(currentPage, productsPerPage, categoryFilter);
+      alert("Product deleted successfully");
     } catch (error) {
-      console.error("Failed to delete product", error);
+      console.error("Failed to delete product:", error);
+    }
+  };
+
+  const handleAddCategory = async (categoryName) => {
+    try {
+      await axiosInstance.post("/category", { categoryName });
+      alert("Category created!");
+      fetchCategories();
+    } catch (error) {
+      console.error("Failed to create category:", error);
+      alert("Error creating category");
+    }
+  };
+
+  const handleDeleteCategory = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this category?")) return;
+
+    try {
+      await axiosInstance.delete(`/category/${id}`);
+      alert("Category deleted");
+      fetchCategories();
+    } catch (error) {
+      console.error("Failed to delete category:", error);
+      alert("Error deleting category");
     }
   };
 
   const handlePageChange = (direction) => {
-    if (direction === "prev" && currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    } else if (
-      direction === "next" &&
-      currentPage < Math.ceil(filteredProducts.length / productsPerPage)
-    ) {
-      setCurrentPage((prev) => prev + 1);
+    const maxPage = Math.ceil(totalCount / productsPerPage);
+    const newPage = direction === "prev" ? currentPage - 1 : currentPage + 1;
+
+    if (newPage >= 1 && newPage <= maxPage) {
+      setCurrentPage(newPage);
+      fetchProducts(newPage, productsPerPage, categoryFilter);
     }
   };
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
-
   return (
-    <div className="p-4 bg-red-100 h-screen">
+    <div className="bg-red-100 min-h-screen">
       <Sidebar2 />
-      <h1 className="flex justify-center text-2xl font-bold mt-20 mb-10 ml-96 text-gray-800">
-        Product Details
-      </h1>
+      <div className="md:ml-96 p-4">
+        <h1 className="text-xl md:text-2xl font-bold text-center mt-20 md:mt-10 mb-6 text-gray-800">
+          Product Details
+        </h1>
 
-      <div className="mb-4 flex gap-4 ml-80">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="border p-2 rounded-lg w-96 ml-52"
-        />
-        <select
-          value={categoryFilter}
-          onChange={handleCategoryFilter}
-          className="border p-2 rounded-lg ml-10"
-        >
-          <option value="">All Products</option>
-          <option value="dogfoodall">Dog Food</option>
-          <option value="catfoodall">Cat Food</option>
-        </select>
-        <button
-          onClick={handleAddProduct}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg ml-24"
-        >
-          Add Product
-        </button>
-      </div>
-      <div className="flex justify-center ml-96">
-        <table className="mt-4 border-collapse border border-gray-200 bg-white">
-          <thead>
-            <tr className="bg-gray-800 text-white">
-              <th className="border border-gray-300 p-2">Title</th>
-              <th className="border border-gray-300 p-2">Category</th>
-              <th className="border border-gray-300 p-2">Price</th>
-              <th className="border border-gray-300 p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentProducts.map((product) => (
-              <tr key={product.id}>
-                <td className="border border-gray-300 p-2">{product.title}</td>
-                <td className="border border-gray-300 p-2">{product.category}</td>
-                <td className="border border-gray-300 p-2">${product.price}</td>
-                <td className="border border-gray-300 p-2">
+        <div className="mb-6 flex flex-col md:flex-row flex-wrap gap-4 justify-center items-center">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="border p-2 rounded-lg w-72 md:w-96"
+          />
+
+          <select
+            value={categoryFilter}
+            onChange={handleCategoryFilter}
+            className="border p-2 rounded-lg w-64"
+          >
+            <option value="">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.categoryName}>
+                {cat.categoryName}
+              </option>
+            ))}
+          </select>
+
+          <button onClick={handleAddProduct} className="bg-gray-800 text-white px-4 py-2 rounded-lg">
+            Add Product
+          </button>
+
+          <button
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="bg-gray-800 text-white px-4 py-2 rounded-lg"
+          >
+            Add Category
+          </button>
+        </div>
+
+        <div className="overflow-x-auto mt-4">
+          <table className="min-w-full border-collapse border border-gray-300 bg-white">
+            <thead>
+              <tr className="bg-gray-800 text-white text-sm md:text-base">
+                <th className="border border-gray-300 p-2">Title</th>
+                <th className="border border-gray-300 p-2">Category</th>
+                <th className="border border-gray-300 p-2">Price</th>
+                <th className="border border-gray-300 p-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProducts.map((product) => (
+                <tr key={product.id} className="text-sm md:text-base">
+                  <td className="border border-gray-300 p-2">{product.productName}</td>
+                  <td className="border border-gray-300 p-2">{product.categoryName || "N/A"}</td>
+                  <td className="border border-gray-300 p-2">₹{product.price}</td>
+                  <td className="border border-gray-300 p-2 space-x-2">
+                    <button
+                      onClick={() => handleEditProduct(product)}
+                      className="bg-yellow-500 text-white px-3 py-1 rounded"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(product.id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+       
+        <div className="flex flex-col md:flex-row justify-center items-center gap-4 mt-8">
+          <button
+            onClick={() => handlePageChange("prev")}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-lg ${
+              currentPage === 1 ? "bg-gray-300 text-gray-500" : "bg-gray-800 text-white"
+            }`}
+          >
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {Math.ceil(totalCount / productsPerPage)}
+          </span>
+          <button
+            onClick={() => handlePageChange("next")}
+            disabled={currentPage === Math.ceil(totalCount / productsPerPage)}
+            className={`px-4 py-2 rounded-lg ${
+              currentPage === Math.ceil(totalCount / productsPerPage)
+                ? "bg-gray-300 text-gray-500"
+                : "bg-gray-800 text-white"
+            }`}
+          >
+            Next
+          </button>
+        </div>
+
+        
+        <div className="mt-10 w-full md:w-3/4 mx-auto bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">All Categories</h2>
+          {categories.length === 0 ? (
+            <p>No categories found.</p>
+          ) : (
+            <ul className="space-y-2">
+              {categories.map((cat) => (
+                <li key={cat.id} className="flex justify-between items-center border-b pb-2">
+                  <span>{cat.categoryName}</span>
                   <button
-                    onClick={() => handleEditProduct(product)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded-lg mr-2"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProduct(product.id)}
-                    className="bg-red-600 text-white px-2 py-1 rounded-lg"
+                    onClick={() => handleDeleteCategory(cat.id)}
+                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                   >
                     Delete
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <ProductModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          initialProduct={editProduct}
+          categories={categories}
+          onUpdate={async (updatedProduct, imageFile) => {
+            try {
+              const formData = new FormData();
+              formData.append("productName", updatedProduct.productName);
+              formData.append("description", updatedProduct.description);
+              formData.append("price", updatedProduct.price);
+
+              formData.append("categoryName", updatedProduct.categoryName);
+
+              if (updatedProduct.id) {
+                formData.append("id", updatedProduct.id);
+              }
+
+              if (imageFile) {
+                formData.append("image", imageFile);
+              }
+
+              let response;
+
+              if (updatedProduct.id) {
+                response = await axiosInstance.put(`/admin/products/${updatedProduct.id}`, formData, {
+                  headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                const updated = response.data.data;
+
+                const updatedWithCategoryName = {
+                  ...updated,
+                  categoryName: updatedProduct.categoryName,
+                };
+
+                setProducts((prev) => prev.map((p) => (p.id === updated.id ? updatedWithCategoryName : p)));
+                setFilteredProducts((prev) => prev.map((p) => (p.id === updated.id ? updatedWithCategoryName : p)));
+              } else {
+                response = await axiosInstance.post("/admin/products", formData, {
+                  headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                const newProduct = response.data.data;
+
+                setProducts((prev) => [newProduct, ...prev]);
+                setFilteredProducts((prev) => [newProduct, ...prev]);
+              }
+
+              setIsModalOpen(false);
+            } catch (err) {
+              console.error("Error saving product:", err);
+              alert("Something went wrong!");
+            }
+          }}
+        />
+
+        <AddCategoryModal
+          isOpen={isCategoryModalOpen}
+          onClose={() => setIsCategoryModalOpen(false)}
+          onCategoryAdded={handleAddCategory}
+        />
       </div>
-
-      <div className="flex justify-between items-center ml-96 mt-10">
-        <button
-          onClick={() => handlePageChange("prev")}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-lg ${
-            currentPage === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-indigo-600 text-white"
-          }`}
-        >
-          Previous
-        </button>
-        <span>
-          Page {currentPage} of {Math.ceil(filteredProducts.length / productsPerPage)}
-        </span>
-        <button
-          onClick={() => handlePageChange("next")}
-          disabled={
-            currentPage ===
-            Math.ceil(filteredProducts.length / productsPerPage)
-          }
-          className={`px-4 py-2 rounded-lg ${
-            currentPage === Math.ceil(filteredProducts.length / productsPerPage)
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-indigo-600 text-white"
-          }`}
-        >
-          Next
-        </button>
-      </div>
-
-      <ProductModal
-        isOpen={isModalOpen}
-        closeModal={() => setIsModalOpen(false)}
-        product={editProduct}
-        onUpdate={(updatedProduct) => {
-          if (updatedProduct.id) {
-            
-            setProducts((prev) =>
-              prev.map((product) =>
-                product.id === updatedProduct.id ? updatedProduct : product
-              )
-            );
-            setFilteredProducts((prev) =>
-              prev.map((product) =>
-                product.id === updatedProduct.id ? updatedProduct : product
-              )
-            );
-          } else {
-           
-            setProducts((prev) => [...prev, updatedProduct]);
-
-            
-            const newFilteredProducts = [...products, updatedProduct].filter(
-              (product) =>
-                (!categoryFilter || product.category === categoryFilter) &&
-                (!searchTerm ||
-                  product.title.toLowerCase().includes(searchTerm.toLowerCase()))
-            );
-
-            setFilteredProducts(newFilteredProducts);
-          }
-        }}
-      />
     </div>
   );
 };
 
 export default ProductDetails;
-
-

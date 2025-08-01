@@ -1,88 +1,172 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
-import { FaLongArrowAltUp } from "react-icons/fa";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { FaHeart } from "react-icons/fa";
+import axiosInstance from "../utils/axiosInstance";
 import Footer from "../Components/Footer";
-import { useNavigate } from "react-router-dom";
-import { CartContext } from "../Features/ContextProvider";
+import { useCart, useWishlist } from "../Features/ContextProvider";
+import { useAuth } from "../Features/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import BackHeader from "../Components/BackHeader";
+import { useLayout } from "../Features/LayoutContext";
 
 
 const DryDogfood = () => {
-  const { dispatch } = useContext(CartContext);
-  const [cart, setCart] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null); // Store selected product details
-  const sliderRef = useRef(null);
-  const scrollAmount = 5000;
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { dispatch } = useCart();
+  const { wishlist = [], wishlistDispatch, addToWishlist } = useWishlist();
+const { isSidebarOpen ,isSearchOpen } = useLayout();
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+const [sortOption, setSortOption] = useState("");
 
- 
-  const scrollUp = () => {
-    if (sliderRef.current) {
-      sliderRef.current.scrollBy({ top: -scrollAmount, behavior: "smooth" });
-    }
-  };
-
-  
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/products")
+    if (!user?.id) {
+      toast.error("Please login to view products.");
+      return;
+    }
+
+    axiosInstance
+      .get("/Product/all")
       .then((response) => {
-        // Filter products for category `dogfoodall`
-        const dogFoodProducts = response.data.filter(
-          (product) => product.category === "drydogfood"
+        const dryDogFood = response.data.data?.filter(
+          (product) => product.categoryName?.toLowerCase() === "drydogfood"
         );
-        setCart(dogFoodProducts);
+        setProducts(dryDogFood || []);
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
+        toast.error("Failed to load products.");
       });
-  }, []);
+  }, [user]);
 
- 
-  const openModal = (item) => {
-    setSelectedProduct(item);
-  };
+   useEffect(() => {
+      let sorted = [...products];
+      if (sortOption === "lowToHigh") {
+        sorted.sort((a, b) => a.price - b.price);
+      } else if (sortOption === "highToLow") {
+        sorted.sort((a, b) => b.price - a.price);
+      
+      }
+      setProducts(sorted);
+    }, [sortOption]);
 
- 
-  const closeModal = () => {
-    setSelectedProduct(null);
+
+  const openModal = (item) => setSelectedProduct(item);
+  const closeModal = () => setSelectedProduct(null);
+
+ const handleAddToCart = async () => {
+  if (!user?.id || !selectedProduct?.id) {
+    toast.error("You must be logged in to add to cart.");
+    return;
+  }
+
+  try {
+    await axiosInstance.post("/Cart/add", {
+      userId: parseInt(user.id),
+      productId: selectedProduct.id,
+      quantity: selectedProduct.quantity || 1,
+    });
+
+    dispatch({ type: "ADD", product: selectedProduct });
+
+    toast.success("Added to cart!", {
+      toastId: "cart-toast",
+      position: "top-right",
+      autoClose: 200,
+      closeOnClick: true,
+    });
+
+    closeModal();
+  } catch (error) {
+    console.error("Add to cart failed:", error);
+    toast.error(
+      error.response?.status === 401
+        ? "Unauthorized. Please login again."
+        : "Server error while adding to cart."
+    );
+  }
+};
+
+  const isInWishlist = (productId) =>
+    wishlist.some((item) => item.productId === productId || item.id === productId);
+
+  const toggleWishlist = async (productId) => {
+    if (!user?.id) {
+      toast.error("You must be logged in to modify wishlist.");
+      return;
+    }
+
+    try {
+      if (isInWishlist(productId)) {
+        wishlistDispatch({ type: "REMOVE", productId });
+        toast.info("Removed from wishlist ", { position: "bottom-right" });
+      } else {
+        await addToWishlist(productId);
+        toast.success("Added to wishlist ", { position: "bottom-right" });
+      }
+    } catch (error) {
+      console.error("Wishlist toggle failed:", error);
+      toast.error("Something went wrong.");
+    }
   };
 
   return (
     <div>
-      
+       {!isSidebarOpen && !isSearchOpen && <BackHeader title="Back to Dogfoods" />}
+      <ToastContainer />
       <div>
-        <img
-          className="w-[1500px] h-[400px]"
-          src="https://breedingbusiness.com/wp-content/uploads/2022/09/best-dog-foods-for-poodles.jpg"
-          alt="Dog Food"
-        />
-      </div>
-
-     
-      <div className="w-[400px] h-[500px] absolute mt-[-550px] ml-[900px] rounded-[30px]">
-        <div className="ml-[-800px] mt-80">
-        
-          <b className="text-[46px] text-white">Dry Dog Foods</b>
+        <img className="w-full h-[400px] object-cover" src="dogcatimg.jpg" alt="Dog Food" />
+        <div className="absolute top-80 left-10">
+          <b className="text-[46px] text-white drop-shadow-md">Dry Dog Foods</b>
         </div>
       </div>
 
-      
-      <div ref={sliderRef} className="overflow-y-auto scroll-smooth max-w-screen gap-[20px]" style={{ maxHeight: "500px" }}>
-        <div className="max-w-7xl mx-auto py-8 px-4">
-          {cart.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {cart.map((item) => (
-                <div key={item.id} className="flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
-                 
-                  <div className="w-full">
-                    <img className="w-full h-48 object-cover" src={item.imageUrl} alt={item.title} />
-                  </div>
+      <div className="mt-8 ml-10">
+        <select
+          className="border shadow-xl border-gray-800/72 px-10 py-2 rounded-[20px]"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+        >
+          <option value="">Sort by</option>
+          <option value="lowToHigh">Price: Low to High</option>
+          <option value="highToLow">Price: High to Low</option>
+        
+        </select>
+      </div>
 
-                  
-                  <div className="flex flex-col justify-between p-4">
-                    <h2 className="text-lg font-bold text-gray-800 mb-2">{item.title}</h2>
-                    <p className="text-gray-600 text-sm mb-2">{item.description.slice(0, 50)}...</p>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => openModal(item)}>
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto">
+          {products.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((item) => (
+                <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden relative">
+                  <img
+                    className="w-full h-48 object-cover"
+                    src={item.imageUrl}
+                    alt={item.productName}
+                  />
+
+                  <button
+                    className="absolute top-3 right-3 bg-white rounded-full p-2 shadow"
+                    onClick={() => toggleWishlist(item.id)}
+                    title={isInWishlist(item.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                  >
+                    <FaHeart
+                      className={`transition duration-150 text-xl ${
+                        isInWishlist(item.id) ? "text-red-500" : "text-gray-300"
+                      }`}
+                    />
+                  </button>
+
+                  <div className="p-4">
+                    <h2 className="text-lg font-bold text-gray-800 mb-2">{item.productName}</h2>
+                    <p className="text-gray-600 text-sm mb-2">
+                      {item.description?.slice(0, 50) || "No description"}...
+                    </p>
+                    <button
+                      className="bg-black text-white px-4 py-2 rounded"
+                      onClick={() => openModal(item)}
+                    >
                       View
                     </button>
                   </div>
@@ -95,27 +179,24 @@ const DryDogfood = () => {
         </div>
       </div>
 
-      {/* Modal */}
       {selectedProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-[400px] p-6">
-            <h2 className="text-xl font-bold mb-4">{selectedProduct.title}</h2>
-            <img className="w-full h-72 object-cover rounded" src={selectedProduct.imageUrl} alt={selectedProduct.title} />
+            <h2 className="text-xl font-bold mb-4">{selectedProduct.productName}</h2>
+            <img
+              className="w-full h-72 object-cover rounded"
+              src={selectedProduct.imageUrl}
+              alt={selectedProduct.productName}
+            />
             <div className="text-lg font-semibold mt-2">
-              Price: £{(selectedProduct.price * selectedProduct.quantity).toFixed(2)}
+              Price: ₹{(selectedProduct.price * (selectedProduct.quantity || 1)).toFixed(2)}
             </div>
             <p className="mt-4 text-gray-600">{selectedProduct.description}</p>
             <div className="mt-4 flex justify-between items-center">
-              <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={closeModal}>
+              <button className="bg-black text-white px-4 py-2 rounded" onClick={closeModal}>
                 Close
               </button>
-              <button
-                className="bg-green-500 text-white px-4 py-2 rounded"
-                onClick={() => {
-                  dispatch({ type: "Add", selectedProduct: selectedProduct });
-                  closeModal();
-                }}
-              >
+              <button className="bg-gray-700 text-white px-4 py-2 rounded" onClick={handleAddToCart}>
                 Add to Cart
               </button>
             </div>
@@ -123,14 +204,6 @@ const DryDogfood = () => {
         </div>
       )}
 
-     
-      <div className="flex justify-end -mt-32">
-        <button className="py-28 rounded-full" onClick={scrollUp}>
-          <FaLongArrowAltUp className="text-xl" />
-        </button>
-      </div>
-
-      
       <Footer />
     </div>
   );

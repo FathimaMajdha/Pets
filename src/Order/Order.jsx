@@ -1,154 +1,258 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
+import { useAuth } from "../Features/AuthContext";
+import BackHeader from "../Components/BackHeader";
+import { useLayout } from "../Features/LayoutContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Order = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userId, orderDetails } = location.state || {}; 
-
-  const [orders, setOrders] = useState([]); 
-  const [order, setOrder] = useState(orderDetails); 
+  const { user } = useAuth();
+  const { isSidebarOpen, isSearchOpen } = useLayout();
+  const { userId, orderDetails } = location.state || {};
+  const [currentOrder, setCurrentOrder] = useState(null);
+  const [previousOrders, setPreviousOrders] = useState([]);
 
   useEffect(() => {
-    
+    const localUserId = user?.id || userId || localStorage.getItem("userid");
+
+    if (!localUserId) {
+      toast.warn("Please login first to view your orders.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+      return;
+    }
+
+    const storedOrder = localStorage.getItem("latestOrder");
+    const wasOrderRemoved = localStorage.getItem("orderRemoved") === "true";
+
+    if (wasOrderRemoved) {
+      setCurrentOrder(null);
+    } else if (orderDetails) {
+      setCurrentOrder(orderDetails);
+      localStorage.setItem("latestOrder", JSON.stringify(orderDetails));
+    } else if (storedOrder) {
+      try {
+        const parsedOrder = JSON.parse(storedOrder);
+
+        const formattedOrder = parsedOrder?.orderItems
+          ? {
+              cartItems: parsedOrder.orderItems.map((item) => ({
+                title: item.productName,
+                description: item.description || "",
+                quantity: item.quantity,
+                price: item.price || 0,
+              })),
+              totalAmount: parsedOrder.totalAmount || 0,
+              paymentStatus: parsedOrder.paymentStatus,
+              deliveryStatus: parsedOrder.deliveryStatus,
+            }
+          : parsedOrder;
+
+        setCurrentOrder(formattedOrder);
+        if (!formattedOrder.deliveryStatus) {
+          fetchOrders();
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to parse latest order from localStorage:", err);
+      }
+    }
+
     const fetchOrders = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/users");
-        const user = response.data.find((user) => user.id === userId); 
-        if (user) {
-          setOrders(user.orders || []); 
+        const res = await axiosInstance.get(`/Order/${localUserId}`);
+        let orders = res.data.data || [];
+
+        const removedOrderIds = JSON.parse(localStorage.getItem("removedOrderIds") || "[]");
+
+        orders = orders.filter((order) => !removedOrderIds.includes(order.orderId));
+
+        if (orders.length > 0) {
+          const latestOrder = orders[orders.length - 1];
+
+          const formattedCurrentOrder = {
+            orderId: latestOrder.orderId,
+            cartItems: latestOrder.items.map((item) => ({
+              title: item.productName,
+              description: item.description,
+              quantity: item.quantity,
+              imageUrl: item.imageUrl,
+            })),
+            totalAmount: latestOrder.totalAmount,
+            paymentStatus: latestOrder.paymentStatus,
+            deliveryStatus: latestOrder.deliveryStatus,
+          };
+
+          localStorage.setItem("latestOrder", JSON.stringify(formattedCurrentOrder));
+          setCurrentOrder(formattedCurrentOrder);
+
+          const restOrders = orders.slice(0, orders.length - 1);
+
+          const formattedPreviousOrders = restOrders.map((order) => ({
+            orderId: order.orderId,
+            totalAmount: order.totalAmount,
+            paymentStatus: order.paymentStatus,
+            deliveryStatus: order.deliveryStatus,
+            items: order.items.map((item) => ({
+              productName: item.productName,
+              description: item.description,
+              quantity: item.quantity,
+              imageUrl: item.imageUrl,
+            })),
+          }));
+
+          setPreviousOrders(formattedPreviousOrders);
+        } else {
+          setCurrentOrder(null);
+          setPreviousOrders([]);
         }
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error("Error fetching previous orders:", error?.response?.data || error);
       }
     };
 
     fetchOrders();
-  }, [userId]);
+  }, [user, userId, orderDetails, navigate]);
 
-  const updateOrdersInDB = async (updatedOrders) => {
+  const handleRemoveCurrentOrder = async () => {
+    if (!currentOrder?.orderId) {
+      toast.warn("No current order to remove.");
+      return;
+    }
+
     try {
-      const response = await axios.get("http://localhost:3000/users");
-      const user = response.data.find((user) => user.id === userId);
+      await axiosInstance.delete(`/Order/${currentOrder.orderId}`);
 
-      if (user) {
-        
-        user.orders = updatedOrders;
-        await axios.put(`http://localhost:3000/users/${userId}`, user);
-        console.log("Orders updated successfully!");
-        setOrders(updatedOrders); 
-      }
+      localStorage.removeItem("latestOrder");
+      setCurrentOrder(null);
+      localStorage.setItem("orderRemoved", "true");
+
+      toast.success("Current order removed successfully.");
     } catch (error) {
-      console.error("Error updating orders in the database:", error);
+      console.error("Failed to delete current order:", error?.response?.data || error);
+      toast.error("Failed to remove current order. Please try again.");
     }
   };
 
-  const removeOrder = async () => {
-    const updatedOrders = orders.filter((userOrder) => userOrder.orderId !== order.orderId);
-    await updateOrdersInDB(updatedOrders);
-    setOrder(null); 
-    navigate("/"); 
-  };
+  const handleRemovePreviousOrder = async (orderIdToRemove) => {
+    try {
+      await axiosInstance.delete(`/Order/${orderIdToRemove}`);
 
-  const updateQuantity = (index, change) => {
-    const updatedCartItems = [...order.cartItems];
-    updatedCartItems[index].quantity += change;
-    if (updatedCartItems[index].quantity <= 0) {
-      updatedCartItems[index].quantity = 1;
+      const updatedOrders = previousOrders.filter((order) => order.orderId !== orderIdToRemove);
+      setPreviousOrders(updatedOrders);
+
+      toast.success("Previous order removed successfully.");
+    } catch (error) {
+      console.error("Failed to delete order:", error?.response?.data || error);
+      toast.error("Failed to remove order. Please try again.");
     }
-    const updatedTotalAmount = updatedCartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-    setOrder({ ...order, cartItems: updatedCartItems, totalAmount: updatedTotalAmount });
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-red-100 rounded-lg shadow-md mt-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Order Summary</h2>
+    <div className="bg-gray-800 min-h-screen">
+      {!isSidebarOpen && !isSearchOpen && <BackHeader title="Back" />}
+      <ToastContainer />
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
 
-      <h3 className="text-lg font-semibold">Current Order:</h3>
-      {order ? (
-        <div>
-          <ul className="space-y-4 mt-4">
-            {order.cartItems.map((item, index) => (
-              <li key={index} className="flex justify-between items-center">
-                <div>
-                  <h4 className="text-md font-medium">{item.title}</h4>
-                  <p className="text-sm text-gray-500">
-                    Quantity:{" "}
-                    <button
-                      className="bg-gray-200 px-2 mx-1"
-                      onClick={() => updateQuantity(index, -1)}
-                    >
-                      -
-                    </button>
-                    {item.quantity}
-                    <button
-                      className="bg-gray-200 px-2 mx-1"
-                      onClick={() => updateQuantity(index, 1)}
-                    >
-                      +
-                    </button>
-                  </p>
-                </div>
-                <div>
-                  <p className="text-lg text-gray-700">Price: £{item.price}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+        <h3 className="text-lg font-semibold">Current Order:</h3>
+        {currentOrder?.cartItems?.length > 0 ? (
+          <div className="mt-4 border p-4 rounded bg-gray-50">
+            <ul className="space-y-4">
+              {currentOrder.cartItems.map((item, index) => (
+                <li key={index} className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-medium ml-32">{item.title}</h4>
+                    <img
+                      src={item.imageUrl}
+                      alt={item.productName}
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                    <p className="text-sm text-gray-600 ml-32">{item.description}</p>
+                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
 
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold">Total Amount:</h4>
-            <p className="text-xl font-bold">£{order.totalAmount.toFixed(2)}</p>
-          </div>
-        </div>
-      ) : (
-        <p>No valid order details found.</p>
-      )}
-
-      <div className="mt-4">
-        <button
-          onClick={removeOrder}
-          className="w-full bg-red-500 text-white py-2 px-4 rounded"
-        >
-          Remove Order
-        </button>
-      </div>
-
-      <hr className="my-6" />
-      <h3 className="text-lg font-semibold">Your Previous Orders:</h3>
-      {orders.length > 0 ? (
-        <div>
-          {orders.map((previousOrder, index) => (
-            <div key={index} className="border-b py-4">
-              <h4 className="font-semibold">Order {index + 1}:</h4>
-              <p className="text-sm text-gray-500">Order ID: {previousOrder.orderId}</p>
-              <div className="mt-4">
-                <ul className="space-y-2">
-                  {previousOrder.cartItems.map((item, itemIndex) => (
-                    <li key={itemIndex}>
-                      <p className="font-medium">{item.title}</p>
-                      <p className="text-gray-500">Quantity: {item.quantity}</p>
-                      <p className="text-gray-500">Price: £{item.price}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-4">
-                <p className="text-lg font-bold">Total: £{previousOrder.totalAmount}</p>
-              </div>
+            <div className="mt-4 text-right font-bold text-lg">
+              Total Amount: ₹{(currentOrder.totalAmount || 0).toFixed(2)}
             </div>
-          ))}
-        </div>
-      ) : (
-        <p>No previous orders found.</p>
-      )}
+
+            {currentOrder.paymentStatus && (
+              <div className="text-sm mt-2 text-green-700">
+                Payment Status: <span className="font-medium capitalize">{currentOrder.paymentStatus}</span>
+              </div>
+            )}
+
+            <div className="text-sm text-blue-700">
+              Delivery Status: <span className="font-medium capitalize">{currentOrder.deliveryStatus || "Processing"}</span>
+            </div>
+
+            <button
+              onClick={handleRemoveCurrentOrder}
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded w-full"
+            >
+              Remove Current Order
+            </button>
+          </div>
+        ) : (
+          <p className="text-gray-500 mt-2">No current order found.</p>
+        )}
+
+        <hr className="my-8" />
+        <h3 className="text-lg font-semibold">Your Orders:</h3>
+        {previousOrders.length > 0 ? (
+          previousOrders.map((order, idx) => (
+            <div key={order.orderId || idx} className="mt-4 border p-4 rounded bg-gray-100">
+              <h4 className="font-semibold text-gray-700 mb-2">Order #{idx + 1}</h4>
+
+              <ul className="text-sm mb-2 space-y-3">
+                {order.items?.map((item, i) => (
+                  <li key={i} className="flex items-center space-x-4">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.productName}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <div>
+                      <p className="font-medium">{item.productName}</p>
+                      <p className="text-gray-600 text-sm">{item.description}</p>
+                      <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="text-right font-semibold mb-2">Total: ₹{order.totalAmount?.toFixed(2)}</div>
+
+              <div className="text-sm text-green-600">
+                Payment Status: <span className="font-medium capitalize">{order.paymentStatus}</span>
+              </div>
+              <div className="text-sm text-green-600">
+                Delivery Status: <span className="font-medium capitalize">{order.deliveryStatus || "Processing"}</span>
+              </div>
+
+              <button
+                onClick={() => handleRemovePreviousOrder(order.orderId)}
+                className="mt-2 bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+              >
+                Remove Order Details
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500 mt-2">No previous orders found.</p>
+        )}
+      </div>
     </div>
   );
 };
 
 export default Order;
-

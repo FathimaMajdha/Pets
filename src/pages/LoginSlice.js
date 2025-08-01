@@ -1,52 +1,56 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance.js";
+
+const ADMIN_EMAIL = "admin@gmail.com";
 
 export const fetchLoginUser = createAsyncThunk(
   "login/fetchLoginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:3000/users");
-      const users = response.data;
+      const response = await axiosInstance.post("/Auth/login", {
+        email,
+        password,
+      });
 
-      const admin = users.find(
-        (user) => user.email === email && user.password === password && email === "admin@gmail.com"
-      );
+      const result = response.data;
 
-      if (admin) {
-        localStorage.setItem("userid", admin.id);
-        localStorage.setItem("email", admin.email); 
-        return { user: admin, isAdmin: true };
+      if (!result?.success) {
+        return rejectWithValue(result?.message || "Login failed");
       }
 
-     
-      const userDetail = users.find(
-        (user) => user.email === email && user.password === password
-      );
+      const { token, user } = result?.data || {};
 
-      if (userDetail) {
-        if (userDetail.isBlocked) {
-          return rejectWithValue("This user can't login");
-        } else {
-          localStorage.setItem("userid", userDetail.id);
-          localStorage.setItem("username", userDetail.username);
-          return { user: userDetail, isAdmin: false };
-        }
+      if (!token || !user) {
+        return rejectWithValue("Invalid response from server.");
       }
 
-      return rejectWithValue("Invalid login credentials");
+      
+      localStorage.setItem("token", token);
+      localStorage.setItem("userid", user.id);
+      localStorage.setItem("email", user.email);
+      localStorage.setItem("username", user.name);
+
+      
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      const isAdmin = user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+      return { user, isAdmin, token }; 
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(
+        error?.response?.data?.message || error?.message || "Something went wrong"
+      );
     }
   }
 );
 
-const LoginSlice = createSlice({
+const loginSlice = createSlice({
   name: "login",
   initialState: {
     user: null,
+    isAdmin: false,
     loading: false,
     error: null,
-    isAdmin: false,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -56,15 +60,16 @@ const LoginSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchLoginUser.fulfilled, (state, action) => {
-        state.loading = false;
         state.user = action.payload.user;
         state.isAdmin = action.payload.isAdmin;
+        state.loading = false;
+        state.error = null;
       })
       .addCase(fetchLoginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Login failed.";
       });
   },
 });
 
-export default LoginSlice.reducer;
+export default loginSlice.reducer;
