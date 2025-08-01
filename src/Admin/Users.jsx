@@ -27,7 +27,6 @@ const Users = () => {
       const result = response.data;
 
       const sortedUsers = result.data.items.sort((a, b) => a.id - b.id);
-
       setFilteredUsers(sortedUsers);
       setUsers(sortedUsers);
       setTotalPages(Math.ceil(result.data.totalCount / usersPerPage));
@@ -42,12 +41,13 @@ const Users = () => {
     axiosInstance
       .patch(`/Admin/${userId}`, { IsBlocked: !currentStatus })
       .then(() => {
-        setUsers((prevUsers) =>
-          prevUsers.map((user) => (user.id === userId ? { ...user, isBlocked: !currentStatus } : user))
-        );
-        setFilteredUsers((prevFilteredUsers) =>
-          prevFilteredUsers.map((user) => (user.id === userId ? { ...user, isBlocked: !currentStatus } : user))
-        );
+        const updateUserStatus = (usersList) =>
+          usersList.map((user) =>
+            user.id === userId ? { ...user, isBlocked: !currentStatus } : user
+          );
+
+        setUsers(updateUserStatus);
+        setFilteredUsers(updateUserStatus);
       })
       .catch((error) => {
         console.error("Error updating user status:", error);
@@ -83,21 +83,21 @@ const Users = () => {
   };
 
   return (
-    <div className="bg-red-100 min-h-screen">
+    <div className="bg-gray-100 min-h-screen">
       <Sidebar2 />
-      <div className="p-4 pt-28 md:pt-10 md:ml-96">
-        <h1 className="text-gray-800 text-2xl font-bold">Users List</h1>
+      <div className="p-6 pt-28 md:pt-10 md:ml-96">
+        <h1 className="text-gray-800 text-3xl font-bold mb-6">Users List</h1>
 
-        <div className="relative w-full sm:w-[300px] md:w-[500px] mt-4 md:mt-0 ml-0 sm:ml-8 md:ml-60">
+        <div className="relative w-full max-w-xl mx-auto mb-6">
           <input
             type="text"
-            placeholder="Search"
+            placeholder="Search users..."
             value={searchVal}
             onChange={(e) => {
               setSearchVal(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-white w-full px-4 py-2 text-black border border-gray-300 rounded-lg pl-10"
+            className="bg-white w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
             <BsSearch />
@@ -105,11 +105,11 @@ const Users = () => {
         </div>
 
         {loading ? (
-          <p className="text-center text-gray-600 mt-10">Loading users...</p>
+          <p className="text-center text-gray-600 text-lg">Loading users...</p>
         ) : (
-          <div className="relative overflow-x-auto">
-            <table className="mt-10 w-full table-auto">
-              <thead className="bg-gray-800 text-white">
+          <div className="overflow-x-auto rounded-lg shadow-md">
+            <table className="w-full text-sm text-left text-gray-700">
+              <thead className="bg-gray-800 text-white uppercase text-sm">
                 <tr>
                   <th className="px-6 py-3">Username</th>
                   <th className="px-6 py-3">Orders</th>
@@ -121,14 +121,21 @@ const Users = () => {
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="bg-white border border-black/10 text-center">
+                  <tr
+                    key={user.id}
+                    className="bg-white hover:bg-blue-50 transition-all border-b border-gray-200 text-center"
+                  >
                     <td className="px-4 py-4">{user.name}</td>
                     <td className="px-4 py-4">{user.orders?.length || 0}</td>
                     <td className="px-4 py-4">{user.email}</td>
                     <td className="px-2 py-4">
                       <button
                         onClick={() => toggleButton(user.id, user.isBlocked)}
-                        className={`w-24 px-2 py-1 rounded text-white ${user.isBlocked ? "bg-red-600" : "bg-green-600"}`}
+                        className={`w-24 py-1 rounded-full text-white text-sm font-medium shadow ${
+                          user.isBlocked
+                            ? "bg-red-600 hover:bg-red-700"
+                            : "bg-green-600 hover:bg-green-700"
+                        }`}
                       >
                         {user.isBlocked ? "Unblock" : "Block"}
                       </button>
@@ -136,7 +143,7 @@ const Users = () => {
                     <td className="px-2 py-4">
                       <button
                         onClick={() => handleModalOpen(user)}
-                        className="w-24 px-2 py-1 rounded bg-gray-700 text-white"
+                        className="w-24 py-1 rounded-full bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium shadow"
                       >
                         View
                       </button>
@@ -144,7 +151,7 @@ const Users = () => {
                     <td className="px-2 py-4">
                       <button
                         onClick={() => deleteButton(user.id)}
-                        className="w-24 px-2 py-1 rounded bg-red-500 text-white"
+                        className="w-24 py-1 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium shadow"
                       >
                         Delete
                       </button>
@@ -156,11 +163,12 @@ const Users = () => {
           </div>
         )}
 
-        <div className="flex justify-center mt-6 gap-2">
+        
+        <div className="flex justify-center mt-8 gap-2">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-700 text-white rounded disabled:opacity-50"
+            className="px-4 py-2 rounded-full bg-gray-700 text-white hover:bg-gray-800 disabled:opacity-50"
           >
             Prev
           </button>
@@ -168,8 +176,10 @@ const Users = () => {
             <button
               key={index}
               onClick={() => handlePageChange(index + 1)}
-              className={`px-4 py-2 rounded ${
-                currentPage === index + 1 ? "bg-gray-800 text-white" : "bg-gray-300 text-black"
+              className={`px-4 py-2 rounded-full text-sm font-medium ${
+                currentPage === index + 1
+                  ? "bg-gray-800 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               {index + 1}
@@ -178,33 +188,35 @@ const Users = () => {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-700 text-white rounded disabled:opacity-50"
+            className="px-4 py-2 rounded-full bg-gray-700 text-white hover:bg-gray-800 disabled:opacity-50"
           >
             Next
           </button>
         </div>
 
+        
         {showModal && selectedUser && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg max-w-lg w-full">
-              <h2 className="text-2xl font-bold">User Details</h2>
-              <p>
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-xl">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">User Details</h2>
+              <p className="mb-2">
                 <strong>Username:</strong> {selectedUser.name}
               </p>
-              <p>
+              <p className="mb-2">
                 <strong>Status:</strong> {selectedUser.isBlocked ? "Blocked" : "Active"}
               </p>
-              <p>
+              <p className="mb-4">
                 <strong>Total Orders:</strong> {selectedUser.orders.length}
               </p>
-              <h3 className="text-xl font-semibold mt-4">Order Details</h3>
+
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">Order Details</h3>
               <div className="max-h-60 overflow-y-auto">
                 {selectedUser.orders?.length > 0 ? (
-                  selectedUser.orders.map((order, orderIndex) => (
-                    <div key={orderIndex} className="mt-4 border-b pb-2">
-                      <h4 className="font-semibold text-lg mb-2">Order {orderIndex + 1}</h4>
+                  selectedUser.orders.map((order, index) => (
+                    <div key={index} className="border-b border-gray-200 py-2">
+                      <h4 className="font-medium">Order {index + 1}</h4>
                       {order.items?.map((item, idx) => (
-                        <div key={idx} className="mt-2">
+                        <div key={idx} className="text-sm ml-2">
                           <p>
                             <strong>Product:</strong> {item.productName}
                           </p>
@@ -213,8 +225,8 @@ const Users = () => {
                           </p>
                         </div>
                       ))}
-                      <p className="mt-2">
-                        <strong>Total Amount:</strong> ₹{order.totalAmount?.toFixed(2) ?? "0.00"}
+                      <p className="mt-2 font-semibold text-sm">
+                        Total: ₹{order.totalAmount?.toFixed(2) ?? "0.00"}
                       </p>
                     </div>
                   ))
@@ -222,9 +234,15 @@ const Users = () => {
                   <p>No orders available.</p>
                 )}
               </div>
-              <button onClick={handleModalClose} className="mt-4 bg-gray-800 text-white px-4 py-2 rounded">
-                Close
-              </button>
+
+              <div className="text-right mt-6">
+                <button
+                  onClick={handleModalClose}
+                  className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}

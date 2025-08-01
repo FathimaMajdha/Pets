@@ -133,7 +133,7 @@ const Order = () => {
       setCurrentOrder(null);
       localStorage.setItem("orderRemoved", "true");
 
-      toast.success("Current order removed successfully.");
+      toast.success("order removed successfully.");
     } catch (error) {
       console.error("Failed to delete current order:", error?.response?.data || error);
       toast.error("Failed to remove current order. Please try again.");
@@ -147,7 +147,7 @@ const Order = () => {
       const updatedOrders = previousOrders.filter((order) => order.orderId !== orderIdToRemove);
       setPreviousOrders(updatedOrders);
 
-      toast.success("Previous order removed successfully.");
+      toast.success("order removed successfully.");
     } catch (error) {
       console.error("Failed to delete order:", error?.response?.data || error);
       toast.error("Failed to remove order. Please try again.");
@@ -163,21 +163,19 @@ const Order = () => {
 
         <h3 className="text-lg font-semibold">Current Order:</h3>
         {currentOrder?.cartItems?.length > 0 ? (
-          <div className="mt-4 border p-4 rounded bg-gray-50">
+          <div className="mt-4 border p-4 rounded bg-gray-50 border-gray-400">
             <ul className="space-y-4">
               {currentOrder.cartItems.map((item, index) => (
-                <li key={index} className="flex justify-between items-center">
-                  <div>
-                    <h4 className="font-medium ml-32">{item.title}</h4>
-                    <img
-                      src={item.imageUrl}
-                      alt={item.productName}
-                      className="w-20 h-20 object-cover rounded"
-                    />
-                    <p className="text-sm text-gray-600 ml-32">{item.description}</p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                  </div>
-                </li>
+                <React.Fragment key={index}>
+                  <li className="flex justify-between items-center pb-4 border-b border-gray-300 last:border-none">
+                    <div>
+                      <h4 className="font-medium ml-32">{item.title}</h4>
+                      <img src={item.imageUrl} alt={item.productName} className="w-20 h-20 object-cover rounded" />
+                      <p className="text-sm text-gray-600 ml-32">{item.description}</p>
+                      <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    </div>
+                  </li>
+                </React.Fragment>
               ))}
             </ul>
 
@@ -191,13 +189,13 @@ const Order = () => {
               </div>
             )}
 
-            <div className="text-sm text-blue-700">
+            <div className="text-sm text-green-700">
               Delivery Status: <span className="font-medium capitalize">{currentOrder.deliveryStatus || "Processing"}</span>
             </div>
 
             <button
               onClick={handleRemoveCurrentOrder}
-              className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded w-full"
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded "
             >
               Remove Current Order
             </button>
@@ -210,23 +208,21 @@ const Order = () => {
         <h3 className="text-lg font-semibold">Your Orders:</h3>
         {previousOrders.length > 0 ? (
           previousOrders.map((order, idx) => (
-            <div key={order.orderId || idx} className="mt-4 border p-4 rounded bg-gray-100">
+            <div key={order.orderId || idx} className="mt-4 border p-4 rounded  border-gray-400 ">
               <h4 className="font-semibold text-gray-700 mb-2">Order #{idx + 1}</h4>
 
               <ul className="text-sm mb-2 space-y-3">
                 {order.items?.map((item, i) => (
-                  <li key={i} className="flex items-center space-x-4">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.productName}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                    <div>
-                      <p className="font-medium">{item.productName}</p>
-                      <p className="text-gray-600 text-sm">{item.description}</p>
-                      <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                    </div>
-                  </li>
+                  <React.Fragment key={i}>
+                    <li className="flex items-center space-x-4 pb-4 border-b border-gray-300 last:border-none">
+                      <img src={item.imageUrl} alt={item.productName} className="w-16 h-16 object-cover rounded" />
+                      <div>
+                        <p className="font-medium">{item.productName}</p>
+                        <p className="text-gray-600 text-sm">{item.description}</p>
+                        <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                      </div>
+                    </li>
+                  </React.Fragment>
                 ))}
               </ul>
 

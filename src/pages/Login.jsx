@@ -42,50 +42,57 @@ const Login = () => {
   return (
     <div>
       <BackHeader title="Back" />
-      <div className="flex justify-center items-center -mt-12 h-screen bg-gray-800">
-        <div className="main bg-white rounded-lg shadow-md p-10 w-[500px] h-[500px] text-center">
-          <div className="text-gray-800 font-devonshire text-4xl">PetsFood</div>
-          <h3 className="text-lg">Enter your login credentials</h3>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+        <div className=" bg-white backdrop-blur-md rounded-2xl shadow-2xl p-8 sm:p-10 w-[90%] max-w-md text-center border border-white border-opacity-20">
+          <div className="text-gray-800 text-4xl font-bold font-devonshire mb-2">PetsFood</div>
+          <h3 className="text-gray-800 text-lg font-medium mb-6">Enter your login credentials</h3>
 
-          <Formik initialValues={{ email: "", password: "" }} validationSchema={validationSchema} onSubmit={handleSubmit}>
+          <Formik
+            initialValues={{ email: "", password: "" }}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
             <Form>
-              <label className="block mt-4 mb-2 text-left text-gray-700 font-bold">Email:</label>
+              <label className="block text-left text-gray-800 font-semibold mb-1">Email</label>
               <Field
                 type="email"
                 name="email"
-                className="block w-full mb-6 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-800"
+                className="block w-full px-4 py-2 mb-2 rounded-md bg-white  text-gray-800  focus:outline-none focus:ring-2 focus:ring-gray-300"
                 placeholder="Enter your email"
                 autoComplete="current-email"
               />
+              <ErrorMessage name="email" component="p" className="text-red-400 text-left text-sm mb-4" />
 
-              <ErrorMessage name="email" component="p" className="text-red-500 text-left" />
-
-              <label className="block mb-4 mt-4 text-left text-gray-700 font-bold">Password:</label>
+              <label className="block text-left text-gray-800 font-semibold mb-1 mt-4">Password</label>
               <Field
-                name="password"
                 type="password"
-                className="block w-full mb-6 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-800"
+                name="password"
+                className="block w-full px-4 py-2 mb-2 rounded-md bg-white  text-gray-800  focus:outline-none focus:ring-2 focus:ring-gray-300"
                 placeholder="Enter your password"
                 autoComplete="current-password"
               />
-
-              <ErrorMessage name="password" component="p" className="text-red-500 text-left" />
+              <ErrorMessage name="password" component="p" className="text-red-400 text-left text-sm mb-4" />
 
               <button
                 type="submit"
-                className="bg-gray-800 text-white py-3 px-6 rounded-md transition-colors duration-300 hover:bg-gray-900"
+                className={`mt-4 w-full py-3 rounded-md text-white font-semibold transition-transform duration-300 bg-gradient-to-r from-gray-800 to-gray-900 hover:scale-105 ${
+                  loading ? "opacity-60 cursor-not-allowed" : ""
+                }`}
                 disabled={loading}
               >
                 {loading ? "Logging in..." : "Submit"}
               </button>
 
-              {error && <p className="text-red-500 mt-2">{error}</p>}
+              {error && <p className="text-red-400 mt-2">{error}</p>}
             </Form>
           </Formik>
 
-          <p className="mt-4">
+          <p className="mt-6 text-gray-800 text-sm">
             Not registered?{" "}
-            <span className="text-blue-500 cursor-pointer hover:underline" onClick={() => navigate("/register")}>
+            <span
+              className="text-indigo-500 cursor-pointer hover:underline"
+              onClick={() => navigate("/register")}
+            >
               Create an account
             </span>
           </p>

@@ -1,11 +1,37 @@
 import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, useField } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
-import BackHeader from "../Components/BackHeader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+const formatCardNumber = (value) => {
+  return value
+    .replace(/\D/g, "")
+    .replace(/(.{4})/g, "$1 ")
+    .trim();
+};
+
+const CardNumberField = ({ name }) => {
+  const [field, , helpers] = useField(name);
+
+  const handleChange = (e) => {
+    const formatted = formatCardNumber(e.target.value);
+    helpers.setValue(formatted);
+  };
+
+  return (
+    <input
+      {...field}
+      onChange={handleChange}
+      value={field.value}
+      placeholder="1234 5678 9012 3456"
+      maxLength={19}
+      className="w-full border p-2 rounded text-black"
+    />
+  );
+};
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -15,7 +41,7 @@ const Payment = () => {
   const validationSchema = Yup.object().shape({
     cardholderName: Yup.string().required("Cardholder name is required"),
     cardNumber: Yup.string()
-      .matches(/^[0-9]{16}$/, "Card number must be 16 digits")
+      .matches(/^\d{4} \d{4} \d{4} \d{4}$/, "Card number must be 16 digits with spaces")
       .required("Card number is required"),
     expirationDate: Yup.string()
       .matches(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, "Expiration date must be in MM/YY format")
@@ -60,7 +86,7 @@ const Payment = () => {
 
       const paymentDetails = {
         cardholderName: values.cardholderName,
-        cardNumber: values.cardNumber,
+        cardNumber: values.cardNumber.replace(/\s/g, ""),
         expirationDate: values.expirationDate,
         cvv: values.cvv,
       };
@@ -142,67 +168,155 @@ const Payment = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-800 text-white">
-        <BackHeader title="Back" />
+      <div className="min-h-screen bg-white text-black">
+        <div className="bg-gray-800 text-white py-8 text-center text-3xl font-devonshire shadow-md">PetsFood</div>
 
-        <div className="bg-gray-800 text-white py-8 px-4 sm:px-10 text-2xl sm:text-3xl md:text-4xl font-devonshire text-center">
-          PetsFood
-        </div>
+        <div className="max-w-3xl mx-auto my-8 px-4 sm:px-8">
+          <div className="bg-white border shadow-lg rounded-xl p-6 sm:p-10">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-center mb-8 text-gray-800">Payment & Address Details</h2>
 
-        <div className="max-w-3xl mx-auto p-4 sm:p-8 bg-gray-800 rounded-lg ">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white text-center mb-6">
-            Payment & Address Details
-          </h2>
-
-          <Formik
-            initialValues={{
-              cardholderName: "",
-              cardNumber: "",
-              expirationDate: "",
-              cvv: "",
-              streetName: "",
-              city: "",
-              homeAddress: "",
-              customerPhone: "",
-              postalCode: "",
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-          >
-            {() => (
-              <Form className="space-y-4">
-                {["cardholderName", "cardNumber", "expirationDate", "cvv"].map((field, i) => (
-                  <div key={i}>
-                    <label className="block font-medium text-white capitalize">
-                      {field.replace(/([A-Z])/g, " $1")}
-                    </label>
-                    <Field name={field} className="w-full border p-2 rounded text-black" />
-                    <ErrorMessage name={field} className="text-red-500 text-sm" component="div" />
-                  </div>
-                ))}
-
-                {["streetName", "city", "homeAddress", "customerPhone", "postalCode"].map((field, i) => (
-                  <div key={i}>
-                    <label className="block font-medium text-white capitalize">
-                      {field.replace(/([A-Z])/g, " $1")}
-                    </label>
-                    <Field name={field} className="w-full border p-2 rounded text-black" />
-                    <ErrorMessage name={field} className="text-red-500 text-sm" component="div" />
-                  </div>
-                ))}
-
-                <button
-                  type="submit"
-                  className="w-full bg-white text-gray-800 py-2 px-4 rounded hover:bg-gray-200 transition"
-                >
-                  Proceed to Payment
-                </button>
-              </Form>
+            {orderDetails?.items && orderDetails.items.length > 0 && (
+              <div className="mb-6 border rounded-lg p-4 bg-gray-50">
+                <h3 className="text-lg font-semibold mb-2 text-gray-700">Selected Products:</h3>
+                <ul className="space-y-2">
+                  {orderDetails.items.map((item, index) => (
+                    <li key={index} className="flex justify-between items-center border-b pb-1 text-sm">
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={item.product?.imageUrl}
+                          alt={item.product?.productName || "Product Image"}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                        <div>
+                          <div className="font-medium">{item.product?.productName || "Unnamed Product"}</div>
+                          <div className="text-gray-600">Qty: {item.quantity}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">₹{Number(item.product?.price || 0) * Number(item.quantity || 1)}</div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
-          </Formik>
+
+            {orderDetails?.items && (
+              <div className="text-right font-semibold text-gray-800 mt-2">
+                Total: ₹
+                {orderDetails.items.reduce((acc, item) => {
+                  const price = Number(item.product?.price || 0);
+                  const qty = Number(item.quantity || 1);
+                  return acc + price * qty;
+                }, 0)}
+              </div>
+            )}
+
+            <Formik
+              initialValues={{
+                cardholderName: "",
+                cardNumber: "",
+                expirationDate: "",
+                cvv: "",
+                streetName: "",
+                city: "",
+                homeAddress: "",
+                customerPhone: "",
+                postalCode: "",
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              {() => (
+                <Form className="space-y-6">
+                  <div className="grid gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Cardholder Name</label>
+                      <Field
+                        name="cardholderName"
+                        placeholder="Enter your name"
+                        className="w-full border p-2 rounded text-black"
+                      />
+                      <ErrorMessage name="cardholderName" className="text-red-500 text-sm" component="div" />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Card Number</label>
+                      <CardNumberField name="cardNumber" />
+                      <ErrorMessage name="cardNumber" className="text-red-500 text-sm" component="div" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Expiration Date (MM/YY)</label>
+                        <Field name="expirationDate" placeholder="MM/YY" className="w-full border p-2 rounded text-black" />
+                        <ErrorMessage name="expirationDate" className="text-red-500 text-sm" component="div" />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-1">CVV</label>
+                        <Field name="cvv" placeholder="123" className="w-full border p-2 rounded text-black" />
+                        <ErrorMessage name="cvv" className="text-red-500 text-sm" component="div" />
+                      </div>
+                    </div>
+
+                    <hr className="border-gray-300 my-4" />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Street Name</label>
+                        <Field name="streetName" placeholder="Street" className="w-full border p-2 rounded text-black" />
+                        <ErrorMessage name="streetName" className="text-red-500 text-sm" component="div" />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-1">City</label>
+                        <Field name="city" placeholder="City" className="w-full border p-2 rounded text-black" />
+                        <ErrorMessage name="city" className="text-red-500 text-sm" component="div" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Home Address</label>
+                      <Field name="homeAddress" placeholder="Address" className="w-full border p-2 rounded text-black" />
+                      <ErrorMessage name="homeAddress" className="text-red-500 text-sm" component="div" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Customer Phone</label>
+                        <Field
+                          name="customerPhone"
+                          placeholder="10-digit phone"
+                          className="w-full border p-2 rounded text-black"
+                        />
+                        <ErrorMessage name="customerPhone" className="text-red-500 text-sm" component="div" />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Postal Code</label>
+                        <Field
+                          name="postalCode"
+                          placeholder="6-digit PIN"
+                          className="w-full border p-2 rounded text-black"
+                        />
+                        <ErrorMessage name="postalCode" className="text-red-500 text-sm" component="div" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-yellow-400 via-red-400 to-pink-500 hover:opacity-90 text-white font-semibold py-2 px-4 rounded-lg transition"
+                  >
+                    Proceed to Payment
+                  </button>
+                </Form>
+              )}
+            </Formik>
+          </div>
         </div>
+
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </>
   );
 };

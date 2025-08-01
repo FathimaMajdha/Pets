@@ -120,25 +120,32 @@ useEffect(() => {
   };
 
   const handleContinue = () => {
-    const selectedOrderItems = cart
-      .filter((item) => selectedItems[item.productId || item.id])
-      .map((item) => {
-        const id = item.productId || item.id;
-        return {
-          ...item,
-          quantity: quantities[id] || 1,
-        };
-      });
+  const hasSelected = Object.values(selectedItems).some(Boolean);
 
-    if (selectedOrderItems.length === 0) {
-      toast.warning("Please select at least one item to continue.");
-      return;
-    }
-
-    navigate("/payment", {
-      state: { orderDetails: { items: selectedOrderItems } },
+  if (!hasSelected) {
+    toast.warning("Please select at least one item to continue.", {
+      autoClose: 1000,
+      pauseOnHover: false,
+      draggable: false,
+      closeOnClick: true,
     });
-  };
+    return;
+  }
+
+  const selectedOrderItems = cart
+    .filter((item) => selectedItems[item.productId || item.id])
+    .map((item) => {
+      const id = item.productId || item.id;
+      return {
+        ...item,
+        quantity: quantities[id] || 1,
+      };
+    });
+
+  navigate("/payment", {
+    state: { orderDetails: { items: selectedOrderItems } },
+  });
+};
 
 
   
