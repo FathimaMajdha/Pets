@@ -58,27 +58,46 @@ const [recentlyUpdatedId, setRecentlyUpdatedId] = useState(null);
     fetchCart();
   }, [user, token]);
 
-  const handleQuantityChange = (id, newQuantity) => {
-  if (newQuantity >= 1) {
-    setQuantities((prev) => {
-      const oldQuantity = prev[id];
-      const updated = { ...prev, [id]: newQuantity };
+  const updateQuantityInBackend = (productId, quantity) => {
+  return axiosInstance.put(
+    `/cart/${user.id}/update-qty`,
+    {
+      items: [{ productId, quantity }],
+    },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+};
 
-      if (oldQuantity !== newQuantity) {
-        setRecentlyUpdatedId(id);  
-      }
 
-      return updated;
-    });
+  
+
+ const handleQuantityChange = async (id, newQuantity) => {
+  if (newQuantity < 1) return;
+
+  try {
+    // Update the quantity on backend first
+    await updateQuantityInBackend(id, newQuantity);
+
+    // Update UI state only after successful backend update
+    setQuantities((prev) => ({ ...prev, [id]: newQuantity }));
+
+    // Show toast immediately after successful API update
+    // toast.success("Quantity updated successfully", {
+    //   autoClose: 200,
+    //   pauseOnHover: false,
+    //   draggable: false,
+    // });
+  } catch (error) {
+    console.error("Failed to update quantity", error);
+    toast.error("Failed to update quantity");
   }
 };
 
-useEffect(() => {
-  if (recentlyUpdatedId) {
-    toast.info("Quantity updated", { autoClose: 200 });
-    setRecentlyUpdatedId(null); 
-  }
-}, [recentlyUpdatedId]);
+
+
+
 
 
   const handleRemove = async (id) => {

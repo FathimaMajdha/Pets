@@ -148,7 +148,7 @@ const ProductDetails = () => {
     <div className="bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <Sidebar2 />
       <div className="md:ml-80 p-4 pt-24">
-        <ToastContainer position="top-center" autoClose={2000} />
+        <ToastContainer position="top-right" autoClose={2000} />
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Product Management</h1>
 
         <div className="flex flex-wrap justify-center items-center gap-4 mb-6">
