@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import BackHeader from "../Components/BackHeader";
 import { useLayout } from "../Features/LayoutContext";
 
-const WetCatfood = () => {
+const WetCatFood = () => {
   const { user } = useAuth();
   const { dispatch } = useCart();
   const { wishlist = [], wishlistDispatch, addToWishlist } = useWishlist();
@@ -201,4 +201,4 @@ const WetCatfood = () => {
   );
 };
 
-export default WetCatfood;
+export default WetCatFood;
